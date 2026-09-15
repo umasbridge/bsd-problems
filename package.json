@@ -1,0 +1,15 @@
+{
+  "name": "bsd-problems",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "BSD My Problems — bridge problem viewer and editor",
+  "files": [
+    "viewer.html",
+    "db.js",
+    "editor.js",
+    "lin.js",
+    "play.js",
+    "playset.js",
+    "problem-player.js"
+  ]
+}
