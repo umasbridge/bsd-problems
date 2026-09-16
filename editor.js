@@ -77,7 +77,15 @@ function defaultEmptyProblem() {
 function withLinDeal(problem) {
   if (!problem?.lin || !globalThis.bpLin?.dealFromLin) return problem;
   const deal = globalThis.bpLin.dealFromLin(problem.lin);
-  return deal ? { ...problem, ...deal } : problem;
+  if (!deal) return problem;
+  // Exclude contract/lead from the LIN-derived spread: for bidding problems
+  // the auction is incomplete so dealFromLin returns '' for both. Use the
+  // DB values (already on `problem`) instead, same as viewer.html does.
+  const { contract: _c, lead: _l, ...rest } = deal;
+  const merged = { ...problem, ...rest };
+  if (!merged.contract && deal.contract) merged.contract = deal.contract;
+  if (!merged.lead && deal.lead) merged.lead = deal.lead;
+  return merged;
 }
 
 // ─── Module state ────────────────────────────────────────────────────────
