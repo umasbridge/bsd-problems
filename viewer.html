@@ -34,10 +34,9 @@
   .topbar {
     background: #fff;
     border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
+    padding: 8px 24px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
   }
   .topbar-left { display: flex; align-items: center; gap: 12px; }
   .topbar h1 {
@@ -48,20 +47,20 @@
     cursor: pointer;
   }
   .set-name-label {
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 600;
-    color: var(--primary);
+    color: var(--text);
   }
   .back-btn {
-    font: inherit; font-size: 0.875rem;
-    background: #fff; color: var(--text);
-    border: 1px solid var(--border-strong);
-    padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    font: inherit; font-size: 1.1rem;
+    background: none; color: var(--text);
+    border: none; padding: 2px 6px; cursor: pointer;
+    line-height: 1;
   }
-  .back-btn:hover { background: var(--soft-fill); }
+  .back-btn:hover { color: var(--accent); }
 
   /* ---------- Main content padding ---------- */
-  .page { padding: 16px 24px 32px; }
+  .page { padding: 10px 24px 32px; }
   .action-row {
     display: flex; gap: 12px; align-items: center;
     flex-wrap: wrap;
@@ -251,30 +250,42 @@
 
   /* ---------- Nav controls (Prev/Next/Jump) ---------- */
   .nav-controls {
-    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    display: flex; gap: 24px; align-items: center;
+    justify-content: flex-start;
+    padding: 4px 24px 6px;
+    flex-wrap: wrap;
   }
+  .nav-meta {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 0.875rem; color: #000;
+  }
+  .nav-meta strong { font-weight: 600; margin-right: 3px; }
+  .nav-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
   .nav-pos {
     font-variant-numeric: tabular-nums;
-    min-width: 80px; text-align: center;
+    min-width: 60px; text-align: center;
     font-size: 0.875rem; color: var(--text-soft);
+  }
+  .nav-current-num {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    border-radius: 4px; padding: 1px 7px;
+    font-weight: 700; min-width: 22px; text-align: center;
   }
   .jump { display: inline-flex; gap: 6px; align-items: center; }
   .jump label { font-size: 0.875rem; color: var(--text-soft); }
   .jump input {
-    width: 64px; padding: 4px 8px;
+    width: 56px; padding: 4px 8px;
     font: inherit; font-size: 0.875rem;
     border: 1px solid var(--border-strong); border-radius: 4px;
   }
 
   /* ---------- Problem display ---------- */
   .problem-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 16px;
+    padding: 4px 0 16px;
+    margin-bottom: 0;
   }
-  .problem-header { text-align: center; margin-bottom: 14px; }
+  .problem-header { text-align: center; margin-bottom: 10px; }
   .problem-header h2 {
     font-size: 1.125rem; font-weight: 700; margin: 0;
     letter-spacing: 0.04em; text-transform: uppercase;
@@ -283,22 +294,18 @@
 
   .meta {
     display: flex; gap: 20px; flex-wrap: wrap;
-    padding: 10px 14px;
+    padding: 8px 12px;
     background: var(--soft-fill);
     border: 1px solid var(--border);
     border-radius: 6px;
     font-size: 0.875rem;
     color: #000;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .meta strong { font-weight: 600; margin-right: 4px; color: #000; }
 
   .contract-lead {
-    margin: 14px 0 18px 0;
-    padding: 10px 14px;
-    background: var(--soft-fill);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    margin: 8px 0 6px 0;
     font-size: 0.95rem;
     color: #000;
   }
@@ -339,9 +346,8 @@
   }
 
   .reveal-btns {
-    display: flex; gap: 12px; justify-content: center;
-    margin-top: 24px; padding-top: 20px;
-    border-top: 1px dashed var(--border);
+    display: flex; gap: 10px; justify-content: flex-start; align-items: center;
+    margin-top: 0; padding-top: 0;
     flex-wrap: wrap;
   }
 
@@ -373,8 +379,20 @@
     color: #000;
   }
 
+  /* ---------- Side-by-side bidding + deal ---------- */
+  .deal-bidding-row {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin: 18px 0 10px;
+  }
+  .deal-bidding-row .bidding-wrap,
+  .deal-bidding-row .deal-wrap { margin: 0; }
+
   /* ---------- 4-hand compass layout ---------- */
-  .deal-wrap { display: flex; justify-content: center; margin: 18px 0; }
+  .deal-wrap { display: flex; justify-content: center; margin: 14px 0; }
   .deal {
     display: inline-grid;
     grid-template-columns: auto auto auto;
@@ -574,14 +592,17 @@
 
   /* ---------- Mobile (≤640px) ---------- */
   @media (max-width: 640px) {
-    .topbar { padding: 10px 12px; flex-wrap: wrap; gap: 8px; row-gap: 8px; }
+    .topbar { padding: 8px 12px; flex-wrap: wrap; gap: 8px; row-gap: 8px; }
     .topbar-left { flex-wrap: wrap; gap: 8px; }
+    .nav-controls { padding: 4px 12px 6px; gap: 12px; }
+    .nav-right { flex-wrap: wrap; }
     .page { padding: 10px 12px 24px; }
     .action-row { gap: 6px; padding: 10px 0; }
     .btn { padding: 6px 10px; font-size: 0.8125rem; }
     .btn-sm { padding: 4px 8px; }
-.problem-header { flex-wrap: wrap; gap: 4px 8px; }
-    .problem-card { padding: 12px; }
+    .problem-header { flex-wrap: wrap; gap: 4px 8px; }
+    .problem-card { padding: 10px 12px; }
+    .deal-bidding-row { flex-direction: column; align-items: center; gap: 12px; }
     .meta { flex-wrap: wrap; gap: 4px 14px; font-size: 0.875rem; }
 
     /* Keep the geographic 4-hand compass on mobile — just shrink it. */
@@ -668,6 +689,10 @@
     font-size: 0.7rem; color: var(--text-muted);
     font-weight: 400; margin-left: 4px;
   }
+  /* IPS: hide the contract-only box (contract is shown below in the problem card) */
+  .pt-contract-only { display: none; }
+  /* Extra breathing room between the action buttons and the deal/play area */
+  .pt-mount { margin-top: 18px !important; }
 </style>
 </head>
 <body>
@@ -675,12 +700,14 @@
 <!-- Top bar (always visible). Title is clickable -> Home. Back button is shown contextually. -->
 <div class="topbar">
   <div class="topbar-left">
-    <button class="back-btn" onclick="window.location.href='/'">&#8592; Dashboard</button>
-    <button class="back-btn hidden" id="backBtn">&larr; Back</button>
-    <h1 id="titleLink">Bridge Problems</h1>
+    <button class="back-btn hidden" id="backBtn">&#8592;</button>
+    <h1 id="titleLink">My Problems</h1>
     <span class="set-name-label hidden" id="setNameLabel"></span>
   </div>
-  <div class="nav-controls hidden" id="navControls">
+</div>
+<div class="nav-controls hidden" id="navControls">
+  <div class="nav-meta" id="navMeta"></div>
+  <div class="nav-right">
     <button class="btn btn-sm" id="prev">&larr; Prev</button>
     <span class="nav-pos" id="pos">— / —</span>
     <button class="btn btn-sm" id="next">Next &rarr;</button>
@@ -1131,6 +1158,21 @@ function displayFormat(p) {
   return raw;
 }
 
+function renderNavMeta(p) {
+  const format = displayFormat(p);
+  return [
+    `<span><strong>Dealer:</strong> ${escapeHtml(p.dealer || '—')}</span>`,
+    `<span><strong>Vul:</strong> ${escapeHtml(p.vulnerability || '—')}</span>`,
+    format ? `<span><strong>Format:</strong> ${escapeHtml(format)}</span>` : '',
+  ].filter(Boolean).join('');
+}
+
+function setNavPos(num, total) {
+  document.getElementById('pos').innerHTML =
+    `<span class="nav-current-num">${num}</span> / ${total}`;
+  document.getElementById('jumpInput').value = num;
+}
+
 function withLinDeal(p) {
   if (!p?.lin || !globalThis.bpLin?.dealFromLin) return p;
   const deal = globalThis.bpLin.dealFromLin(p.lin);
@@ -1234,11 +1276,10 @@ function renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared }) {
     </div>`;
   }
   return `<div class="reveal-btns problem-actions-top">
-    ${showSol ? '<button class="btn" id="showSolutionBtn">Show Solution</button>' : ''}
-    ${!isShared ? '<button class="btn" id="showSourceBtn">Show Source</button>' : ''}
-    ${showSol && !hideGrade ? `<button class="btn" id="selfGradeBtn"${playTableAvailable(p) && !(loadGrades()[p.problem_id] || []).length ? ' disabled' : ''}>Review Attempts</button>` : ''}
+    ${showSol ? '<button class="btn" id="showSolutionBtn">Solution</button>' : ''}
+    ${!isShared ? '<button class="btn" id="showSourceBtn">Source</button>' : ''}
     ${!isShared ? '<button class="btn admin-only" id="editBtn">Edit</button>' : ''}
-    ${isSavedSet && problemSetIsShared() ? '<button class="btn btn-notes" id="myNotesBtn">Discussion</button>' : ''}
+    <button class="btn btn-notes" id="myNotesBtn">Notes</button>
     ${isSavedSet && !isShared ? `
       <div class="action-menu" id="actionMenu">
         <button class="btn" id="actionBtn">Action ▾</button>
@@ -1259,24 +1300,14 @@ function renderProblemStage(p, displayNum, opts) {
   const showSol = isShared ? _viewingSharedSet.showSolution : true;
   return `
     <div class="problem-card">
-      <div class="problem-header">
-        <h2>${p.is_play_set ? 'Board' : 'Problem'} ${displayNum}</h2>
-        ${''}
-      </div>
-
-      <div class="meta">
-        <div><strong>Dealer:</strong>${escapeHtml(p.dealer || '—')}</div>
-        <div><strong>Vulnerability:</strong>${escapeHtml(p.vulnerability || '—')}</div>
-        ${displayFormat(p) ? `<div><strong>Format:</strong>${escapeHtml(displayFormat(p))}</div>` : ''}
-      </div>
-
       ${renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared })}
 
       ${playTableAvailable(p)
         ? '<div id="ptMount" class="pt-mount"></div>'
-        : renderDeal(p.hands_structured, p.problem_visible_hands || ['N','S'])}
-
-      ${playTableAvailable(p) ? '' : renderBidding(p.bidding)}
+        : `<div class="deal-bidding-row">
+             ${renderBidding(p.bidding)}
+             ${renderDeal(p.hands_structured, p.problem_visible_hands || ['N','S'])}
+           </div>`}
 
       ${(p.subcategory || '').toLowerCase() === 'bidding'
         ? `<div class="contract-lead"><strong>Your Bid?</strong></div>`
@@ -1290,11 +1321,7 @@ function renderProblemStage(p, displayNum, opts) {
 
       ${(() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
 
-      ${(() => {
-        const grades = (loadGrades()[p.problem_id] || []);
-        if (!grades.length) return '';
-        return `<div class="attempt-count" id="attemptCount">${grades.length} attempt${grades.length > 1 ? 's' : ''}</div>`;
-      })()}
+      ${''}
 
     </div>`;
 }
@@ -2835,8 +2862,8 @@ function showViewProblem() {
       <button class="btn ${inSet ? 'btn-danger' : 'btn-primary'}" id="viewToggleBtn">${inSet ? 'Remove from Problem Set' : 'Add to Problem Set'}</button>
       <button class="btn" id="viewExitBtn">Exit</button>
     </div>`;
-  document.getElementById('pos').textContent = `${num} / ${viewPool.length}`;
-  document.getElementById('jumpInput').value = num;
+  setNavPos(num, viewPool.length);
+  document.getElementById('navMeta').innerHTML = renderNavMeta(p);
   document.getElementById('viewToggleBtn').addEventListener('click', toggleViewProblem);
   document.getElementById('viewExitBtn').addEventListener('click', exitViewMode);
   mountPlayTable(p);
@@ -3155,15 +3182,16 @@ function handleOpenNotes(problemId, displayNum) {
     resourceType = 'bsd_play_set';
     resourceId = `${_psId}:${problemId}`;
     name = `Board ${displayNum} Notes`;
-  } else {
-    // The Discussion is a shared thread scoped to the problem *within a set* —
-    // visible to everyone the set is shared with. It's a property of the
-    // problem-in-this-set; the same problem in another set has its own thread.
-    const setId = currentSavedId;
-    if (!setId) return;   // books/drafts have no set → no discussion
+  } else if (currentSavedId) {
     resourceType = 'bp_problem_set';
-    resourceId = `${setId}:${problemId}`;
-    name = `Problem ${displayNum} Discussion`;
+    resourceId = `${currentSavedId}:${problemId}`;
+    name = `Problem ${displayNum} Notes`;
+  } else if (readingBook && readingBookTitle) {
+    resourceType = 'bp_book';
+    resourceId = `${readingBookTitle}:${problemId}`;
+    name = `Problem ${displayNum} Notes`;
+  } else {
+    return;
   }
   const src = `/discussion-embed.html?resourceType=${encodeURIComponent(resourceType)}&resourceId=${encodeURIComponent(resourceId)}&name=${encodeURIComponent(name)}`;
 
@@ -3753,12 +3781,15 @@ function switchPage(page) {
 
   // Show set name when viewing a saved or draft set
   const setLabel = document.getElementById('setNameLabel');
+  const titleLink = document.getElementById('titleLink');
   if (page === 'create' && (currentSavedId || draftSetName)) {
-    setLabel.textContent = '— ' + (draftSetName || '');
+    setLabel.textContent = draftSetName || '';
     setLabel.classList.remove('hidden');
+    titleLink.classList.add('hidden');
   } else {
     setLabel.textContent = '';
     setLabel.classList.add('hidden');
+    titleLink.classList.remove('hidden');
   }
 
   if (page === 'sets') {
@@ -3811,8 +3842,8 @@ function show(i) {
   const p = problemSet[cursor];
   const isSavedSet = !!currentSavedId;
   document.getElementById('root').innerHTML = renderProblemStage(p, num, { isSavedSet });
-  document.getElementById('pos').textContent = `${num} / ${problemSet.length}`;
-  document.getElementById('jumpInput').value = num;
+  setNavPos(num, problemSet.length);
+  document.getElementById('navMeta').innerHTML = renderNavMeta(p);
   mountPlayTable(p);
   const solBtn = document.getElementById('showSolutionBtn');
   if (solBtn) solBtn.addEventListener('click', () => {
@@ -3827,12 +3858,6 @@ function show(i) {
       onResetClick(p);
     });
   });
-  const gradeBtn = document.getElementById('selfGradeBtn');
-  // Non-playable problems have no interactive attempts, so each open logs a
-  // fresh manual row to grade; playable problems just review what was played.
-  if (gradeBtn) gradeBtn.addEventListener('click', () => openGradeModal(p, num, { addRow: !playTableAvailable(p) }));
-  const attemptEl = document.getElementById('attemptCount');
-  if (attemptEl) attemptEl.addEventListener('click', () => openGradeModal(p, num, { addRow: false }));
   const notesBtn = document.getElementById('myNotesBtn');
   if (notesBtn) notesBtn.addEventListener('click', () => handleOpenNotes(p.problem_id, num));
   const editBtn = document.getElementById('editBtn');
