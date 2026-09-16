@@ -777,18 +777,26 @@ function validatePlayForSave(obj, canonLin) {
   }
   if (!obj.contract) throw new Error('Enter the contract before adding played cards.');
   const pcCount = (canonLin.match(/pc\|/g) || []).length;
+  // Build a descriptive error for any sequence failure.
+  const mbCalls = [...canonLin.matchAll(/mb\|([^|]+)\|/g)].map(x => x[1]);
+  const dealerM = canonLin.match(/md\|(\d)/);
+  const dealerSeat = dealerM ? ({ 1:'S',2:'W',3:'N',4:'E' }[dealerM[1]] || 'N') : 'N';
+  const linDeclarer = L.declarerFromCalls(mbCalls, dealerSeat);
+  const linLeader = linDeclarer ? SEAT_LABEL[seatAt(linDeclarer, 1)] : null;
+  const seqHint = linLeader
+    ? ` The bidding implies ${linLeader} is on lead — enter each card in play order starting from ${linLeader}.`
+    : ' If you changed the bidding, the leading seat may have changed — re-enter the play cards.';
   if (pcCount < obj.play.length) {
-    // Try to name the expected leader so the user knows what went wrong.
-    const L2 = globalThis.bpLin;
-    const mbCalls = [...canonLin.matchAll(/mb\|([^|]+)\|/g)].map(x => x[1]);
-    const dealerM = canonLin.match(/md\|(\d)/);
-    const dealerSeat = dealerM ? ({ 1:'S',2:'W',3:'N',4:'E' }[dealerM[1]] || 'N') : 'N';
-    const linDeclarer = L2.declarerFromCalls(mbCalls, dealerSeat);
-    const linLeader = linDeclarer ? SEAT_LABEL[seatAt(linDeclarer, 1)] : null;
-    const hint = linLeader
-      ? ` The bidding implies ${linLeader} is on lead — re-enter the play cards in that order.`
-      : ' If you changed the bidding, the leading seat may have changed — re-enter the play cards.';
-    throw new Error('Cards played are not a legal sequence.' + hint);
+    throw new Error('Cards played are not a legal sequence.' + seqHint);
+  }
+  // Also catch plays that the LIN accepted verbatim (via buildDisplayLin fallback)
+  // but that simulatePlay rejects — e.g. a player plays a card not in their hand.
+  if (globalThis.bpPlay?.parseLin) {
+    const parsed = globalThis.bpPlay.parseLin(canonLin);
+    if (parsed?.hands && parsed?.declarer) {
+      const sim = L.simulatePlay(obj.play, parsed.hands, parsed.declarer, parsed.trump ?? null);
+      if (!sim) throw new Error('Cards played are not a legal sequence — a player holds a card they do not have, or fails to follow suit.' + seqHint);
+    }
   }
 }
 
