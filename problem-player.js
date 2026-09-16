@@ -43,10 +43,20 @@ function contractFromCalls(calls) {
   return bid ? `${bid}${doubled}` : undefined;
 }
 
+function contractFromProblem(str) {
+  const c = globalThis.bpLin?.parseContractStr?.(str);
+  if (!c) return undefined;
+  return c.level + c.denom + (c.x === 'xx' ? 'XX' : c.x === 'x' ? 'X' : '');
+}
+
 function rowFromProblem(problem, linData) {
   const lin = normalizeLin(problem.lin);
   const parsed = globalThis.bpPlay?.parseLin?.(lin);
-  const declarer = String(parsed?.declarer || '').toUpperCase();
+  let declarer = String(parsed?.declarer || '').toUpperCase();
+  if (!declarer) {
+    const m = (problem.contract || '').match(/\s([NESW])\s*$/i);
+    if (m) declarer = m[1].toUpperCase();
+  }
   const dummy = declarer ? globalThis.bpPlay?.partner?.(declarer) : null;
   const sourceVisible = (problem.problem_visible_hands || ['S']).map(seat => String(seat).toUpperCase());
   const userSeat = sourceVisible.find(seat => seat !== dummy) || declarer || 'S';
@@ -62,7 +72,7 @@ function rowFromProblem(problem, linData) {
     play: playFromLin.length ? playFromLin : (leadCard ? [leadCard] : []),
     problem_visible_hands: [userIsDeclarerSide ? declarer : userSeat],
     problem_user_hands: userIsDeclarerSide && dummy ? [declarer, dummy] : [userSeat],
-    contract: contractFromCalls(linData.bids?.map(entry => entry.bid)),
+    contract: contractFromCalls(linData.bids?.map(entry => entry.bid)) || contractFromProblem(problem.contract),
     declarer: declarer || undefined,
     lead: leadCard || undefined,
     vul: linData.vul,

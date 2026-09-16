@@ -1134,7 +1134,9 @@ function displayFormat(p) {
 function withLinDeal(p) {
   if (!p?.lin || !globalThis.bpLin?.dealFromLin) return p;
   const deal = globalThis.bpLin.dealFromLin(p.lin);
-  return deal ? { ...p, ...deal } : p;
+  if (!deal) return p;
+  const { contract, lead, ...rest } = deal;
+  return { ...p, ...rest };
 }
 
 function renderBidding(bidding) {

@@ -517,11 +517,7 @@ function linIsPlayable(lin) {
     }
     sizes.push(n);
   }
-  if (sizes[0] < 1 || !sizes.every(n => n === sizes[0])) return false;
-  const calls = [...lin.matchAll(/mb\|([^|]+)\|/g)].map(x => x[1]);
-  const hasBid = calls.some(c => /^[1-7]/.test(c));
-  const closed = calls.length >= 4 && calls.slice(-3).every(c => c === 'p');
-  return hasBid && closed;
+  return sizes[0] >= 1 && sizes.every(n => n === sizes[0]);
 }
 
 const bpLin = {
