@@ -387,7 +387,7 @@
     justify-content: center;
     align-items: flex-start;
     flex-wrap: wrap;
-    margin: 18px 0 10px;
+    margin: 9px 0 10px;
   }
   .deal-bidding-row .bidding-wrap,
   .deal-bidding-row .deal-wrap { margin: 0; }
@@ -410,6 +410,17 @@
   .pos-c { grid-column: 2; grid-row: 2; justify-self: start; }
   .pos-e { grid-column: 3; grid-row: 2; justify-self: start; }
   .pos-s { grid-column: 2; grid-row: 3; justify-self: start; }
+  .pos-bl { grid-column: 1; grid-row: 3; justify-self: end; align-self: start; }
+  .contract-lead-box {
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    background: #fff;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .contract-lead-box strong { font-weight: 600; }
 
   .hand { white-space: nowrap; text-align: left; line-height: 1.4; }
   .hand .row { text-align: left; }
@@ -697,7 +708,14 @@
   /* IPS: hide the contract-only box (contract is shown below in the problem card) */
   .pt-contract-only { display: none; }
   /* Extra breathing room between the action buttons and the deal/play area */
-  .pt-mount { margin-top: 18px !important; }
+  .pt-mount { margin-top: 0 !important; }
+  .pt-complete-result {
+    position: static !important;
+    margin-top: 6px;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+    min-width: 0 !important;
+  }
 </style>
 </head>
 <body>
@@ -1133,7 +1151,7 @@ function renderHandBlock(hand, visible) {
   return `<div class="hand">${renderHandRows(hand)}</div>`;
 }
 
-function renderDeal(hands, visibleSeats) {
+function renderDeal(hands, visibleSeats, bottomLeft) {
   const v = visibleSeats || ['N','E','S','W'];
   const isV = (p) => v.includes(p);
   return `
@@ -1143,6 +1161,7 @@ function renderDeal(hands, visibleSeats) {
       <div class="pos-c"><div class="compass">N<br><span class="ew">W&nbsp;E</span><br>S</div></div>
       <div class="pos-e">${renderHandBlock(hands.E, isV('E'))}</div>
       <div class="pos-s">${renderHandBlock(hands.S, isV('S'))}</div>
+      ${bottomLeft ? `<div class="pos-bl">${bottomLeft}</div>` : ''}
     </div></div>`;
 }
 
@@ -1301,24 +1320,26 @@ function renderProblemStage(p, displayNum, opts) {
   const { isSavedSet, hideGrade } = opts || {};
   const isShared = !!_viewingSharedSet;
   const showSol = isShared ? _viewingSharedSet.showSolution : true;
+  const isBidding = (p.subcategory || '').toLowerCase() === 'bidding';
+  const _linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
+  let declarer = _linParsed?.declarer || null;
+  if (!declarer) { const _m = (p.contract || '').match(/\s([NESW])\s*$/i); if (_m) declarer = _m[1].toUpperCase(); }
+  const contractLeadBox = isBidding
+    ? `<div class="contract-lead-box"><strong>Your Bid?</strong></div>`
+    : (p.contract || p.lead)
+      ? `<div class="contract-lead-box">
+           <div>${colorizeSuits(p.contract || '—')}${declarer ? ' by ' + declarer : ''}</div>
+           ${p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : ''}
+         </div>`
+      : '';
   return `
     <div class="problem-card">
       ${playTableAvailable(p)
         ? '<div id="ptMount" class="pt-mount"></div>'
         : `<div class="deal-bidding-row">
              ${renderBidding(p.bidding)}
-             ${renderDeal(p.hands_structured, p.problem_visible_hands || ['N','S'])}
+             ${renderDeal(p.hands_structured, p.problem_visible_hands || ['N','S'], contractLeadBox)}
            </div>`}
-
-      ${(p.subcategory || '').toLowerCase() === 'bidding'
-        ? `<div class="contract-lead"><strong>Your Bid?</strong></div>`
-        : ((p.contract || p.lead)
-            ? `<div class="contract-lead">
-                <strong>Contract:</strong>${colorizeSuits(p.contract || '—')}
-                <span class="sep"></span>
-                <strong>Lead:</strong>${colorizeSuits(p.lead || '—')}
-              </div>`
-            : '')}
 
       ${(() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
 
@@ -1856,11 +1877,26 @@ function mountPlayTable(p) {
   _problemPlayerController = null;
   _pt = null;
   root.innerHTML = '<div class="pt-loading">Loading player…</div>';
+  let bottomLeftEl = null;
+  if (p.contract || p.lead) {
+    const linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
+    let declarer = linParsed?.declarer || null;
+    if (!declarer) {
+      const m = (p.contract || '').match(/\s([NESW])\s*$/i);
+      if (m) declarer = m[1].toUpperCase();
+    }
+    bottomLeftEl = document.createElement('div');
+    bottomLeftEl.className = 'contract-lead-box';
+    bottomLeftEl.innerHTML =
+      `<div>${colorizeSuits(p.contract || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
+      (p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : '');
+  }
   import('./problem-player.js')
     .then(({ mountProblemPlayer }) => mountProblemPlayer(root, { ...p, lin }, {
       format: displayFormat(p) || null,
       cardingNS: globalThis.bpCardingPreferences?.NS || 'UDCA',
       cardingEW: globalThis.bpCardingPreferences?.EW || 'UDCA',
+      bottomLeftEl,
       onComplete: result => {
         if (_isPlaySetMode) return;
         pushAttempt(p.problem_id || p.id, {
@@ -2489,6 +2525,10 @@ function ptRender() {
       <div class="pt-pos-c">${ptTrickCenter()}</div>
       <div class="pt-pos-e"><div class="pt-seatlabel">${ptSeatLabel('E')}</div>${ptRenderHand('E')}</div>
       <div class="pt-pos-s"><div class="pt-seatlabel">${ptSeatLabel('S')}</div>${ptRenderHand('S')}</div>
+      ${(_pt.row.contract || _pt.row.lead) ? `<div class="pt-pos-bl"><div class="contract-lead-box">
+        <div><strong>Contract:</strong> ${colorizeSuits(_pt.row.contract || '—')}</div>
+        <div><strong>Lead:</strong> ${colorizeSuits(_pt.row.lead || '—')}</div>
+      </div></div>` : ''}
     </div>`;
   root.querySelectorAll('.pt-card').forEach(el => {
     el.addEventListener('click', () => ptOnCardClick(el.dataset.seat, el.dataset.suit, el.dataset.rank));
@@ -2521,6 +2561,7 @@ function ensurePlayTableStyle() {
     .pt-pos-n{grid-column:2;grid-row:1;} .pt-pos-w{grid-column:1;grid-row:2;}
     .pt-pos-c{grid-column:2;grid-row:2;} .pt-pos-e{grid-column:3;grid-row:2;} .pt-pos-s{grid-column:2;grid-row:3;}
     .pt-pos-tr{grid-column:3;grid-row:1;align-self:start;justify-self:end;}
+    .pt-pos-bl{grid-column:1;grid-row:3;align-self:start;justify-self:end;}
     .pt-seatlabel{font-family:ui-sans-serif,system-ui;font-size:0.72rem;color:#374151;text-align:center;margin-bottom:2px;}
     .pt-role{color:#9ca3af;}
     .pt-hand{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;min-width:96px;}
@@ -2567,7 +2608,7 @@ function ensurePlayTableStyle() {
     .pt-replay{margin-top:4px;background:#fff;border:1px solid #2563eb;color:#2563eb;border-radius:6px;padding:6px 18px;
       font-size:0.85rem;font-weight:600;cursor:pointer;font-family:ui-sans-serif,system-ui;}
     .pt-replay:hover{background:#eff6ff;}
-    .pt-mount{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0 12px;}
+    .pt-mount{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 12px;}
     .pt-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:440px;min-height:30px;}
     .pt-status{font-size:0.86rem;color:#1d4ed8;font-family:ui-sans-serif,system-ui;}
     .pt-retry{background:#fff;border:1px solid #2563eb;color:#2563eb;border-radius:6px;padding:4px 14px;flex-shrink:0;
