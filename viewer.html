@@ -1189,7 +1189,7 @@ function renderNavMeta(p) {
 function setNavPos(num, total) {
   const input = document.getElementById('jumpInput');
   input.value = num;
-  input.style.width = `${Math.max(String(num).length, 1) + 0.5}ch`;
+  input.style.width = `${String(total).length + 0.8}ch`;
   document.getElementById('navTotal').textContent = ` / ${total}`;
 }
 
@@ -1319,15 +1319,18 @@ function renderProblemStage(p, displayNum, opts) {
   const isShared = !!_viewingSharedSet;
   const showSol = isShared ? _viewingSharedSet.showSolution : true;
   const isBidding = (p.subcategory || '').toLowerCase() === 'bidding';
+  const _linDeal = globalThis.bpLin?.dealFromLin?.(p.lin);
+  const _contract = p.contract || _linDeal?.contract || null;
+  const _lead = p.lead || _linDeal?.lead || null;
   const _linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
   let declarer = _linParsed?.declarer || null;
-  if (!declarer) { const _m = (p.contract || '').match(/\s([NESW])\s*$/i); if (_m) declarer = _m[1].toUpperCase(); }
+  if (!declarer) { const _m = (_contract || '').match(/\s([NESW])\s*$/i); if (_m) declarer = _m[1].toUpperCase(); }
   const contractLeadBox = isBidding
     ? `<div class="contract-lead-box"><strong>Your Bid?</strong></div>`
-    : (p.contract || p.lead)
+    : (_contract || _lead)
       ? `<div class="contract-lead-box">
-           <div>${colorizeSuits(p.contract || '—')}${declarer ? ' by ' + declarer : ''}</div>
-           ${p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : ''}
+           <div>${colorizeSuits(_contract || '—')}${declarer ? ' by ' + declarer : ''}</div>
+           ${_lead ? `<div><strong>Lead:</strong> ${colorizeSuits(_lead)}</div>` : ''}
          </div>`
       : '';
   return `
@@ -1875,19 +1878,19 @@ function mountPlayTable(p) {
   _problemPlayerController = null;
   _pt = null;
   root.innerHTML = '<div class="pt-loading">Loading player…</div>';
+  const linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
+  const linDeal = globalThis.bpLin?.dealFromLin?.(p.lin);
+  const contract = p.contract || linDeal?.contract || null;
+  const lead = p.lead || linDeal?.lead || null;
+  let declarer = linParsed?.declarer || null;
+  if (!declarer) { const m = (contract || '').match(/\s([NESW])\s*$/i); if (m) declarer = m[1].toUpperCase(); }
   let bottomLeftEl = null;
-  if (p.contract || p.lead) {
-    const linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
-    let declarer = linParsed?.declarer || null;
-    if (!declarer) {
-      const m = (p.contract || '').match(/\s([NESW])\s*$/i);
-      if (m) declarer = m[1].toUpperCase();
-    }
+  if (contract || lead) {
     bottomLeftEl = document.createElement('div');
     bottomLeftEl.className = 'contract-lead-box';
     bottomLeftEl.innerHTML =
-      `<div>${colorizeSuits(p.contract || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
-      (p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : '');
+      `<div>${colorizeSuits(contract || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
+      (lead ? `<div><strong>Lead:</strong> ${colorizeSuits(lead)}</div>` : '');
   }
   import('./problem-player.js')
     .then(({ mountProblemPlayer }) => mountProblemPlayer(root, { ...p, lin }, {
