@@ -263,22 +263,19 @@
   .nav-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
   .nav-pos {
     font-variant-numeric: tabular-nums;
-    min-width: 60px; text-align: center;
     font-size: 0.875rem; color: var(--text-soft);
+    display: inline-flex; align-items: center; gap: 0;
   }
-  .nav-current-num {
-    display: inline-block;
-    background: var(--accent); color: #fff;
-    border-radius: 4px; padding: 1px 7px;
-    font-weight: 700; min-width: 22px; text-align: center;
+  .nav-jump-input {
+    width: 3ch; border: none; outline: none;
+    background: transparent; padding: 0;
+    font: inherit; font-size: 0.875rem; font-weight: 700;
+    color: #2563eb; text-align: right;
+    -moz-appearance: textfield;
   }
-  .jump { display: inline-flex; gap: 6px; align-items: center; }
-  .jump label { font-size: 0.875rem; color: var(--text-soft); }
-  .jump input {
-    width: 56px; padding: 4px 8px;
-    font: inherit; font-size: 0.875rem;
-    border: 1px solid var(--border-strong); border-radius: 4px;
-  }
+  .nav-jump-input::-webkit-outer-spin-button,
+  .nav-jump-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .btn-nav-arrow { min-width: 28px; padding: 3px 8px; font-size: 1rem; }
 
   /* ---------- Problem display ---------- */
   .problem-card {
@@ -730,14 +727,13 @@
 </div>
 <div class="nav-controls hidden" id="navControls">
   <div class="nav-right">
-    <button class="btn btn-sm" id="prev">&larr; Prev</button>
-    <span class="nav-pos" id="pos">— / —</span>
-    <button class="btn btn-sm" id="next">Next &rarr;</button>
-    <span class="jump">
-      <label for="jumpInput">#</label>
-      <input id="jumpInput" type="number" min="1" />
-      <button class="btn btn-sm" id="jumpBtn">Go</button>
+    <button class="btn btn-sm btn-nav-arrow" id="prev">&#8592;</button>
+    <span class="nav-pos" id="pos">
+      <input id="jumpInput" type="number" min="1" class="nav-jump-input" />
+      <span id="navTotal"> / —</span>
     </span>
+    <button class="btn btn-sm" id="jumpBtn">Go</button>
+    <button class="btn btn-sm btn-nav-arrow" id="next">&#8594;</button>
   </div>
   <div class="nav-meta" id="navMeta"></div>
 </div>
@@ -1190,9 +1186,10 @@ function renderNavMeta(p) {
 }
 
 function setNavPos(num, total) {
-  document.getElementById('pos').innerHTML =
-    `<span class="nav-current-num">${num}</span> / ${total}`;
-  document.getElementById('jumpInput').value = num;
+  const input = document.getElementById('jumpInput');
+  input.value = num;
+  input.style.width = `${Math.max(String(num).length, 1) + 0.5}ch`;
+  document.getElementById('navTotal').textContent = ` / ${total}`;
 }
 
 function withLinDeal(p) {
@@ -4399,12 +4396,16 @@ document.getElementById('next').addEventListener('click', () => {
   if (viewMode) { viewCursor++; showViewProblem(); }
   else show(cursor + 1);
 });
-document.getElementById('jumpBtn').addEventListener('click', () => {
+function doJump() {
   const v = parseInt(document.getElementById('jumpInput').value, 10);
   if (!isNaN(v)) {
     if (viewMode) { viewCursor = v - 1; showViewProblem(); }
     else show(v - 1);
   }
+}
+document.getElementById('jumpBtn').addEventListener('click', doJump);
+document.getElementById('jumpInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); doJump(); }
 });
 // Multi-filter change events are wired inside MultiFilter (passes refreshPool
 // as the onChange callback in populateFilterOptions). No native <select>
