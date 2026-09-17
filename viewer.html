@@ -60,7 +60,7 @@
   .back-btn:hover { color: var(--accent); }
 
   /* ---------- Main content padding ---------- */
-  .page { padding: 10px 24px 32px; }
+  .page { padding: 4px 24px 32px; }
   .action-row {
     display: flex; gap: 12px; align-items: center;
     flex-wrap: wrap;
@@ -282,7 +282,7 @@
 
   /* ---------- Problem display ---------- */
   .problem-card {
-    padding: 4px 0 16px;
+    padding: 0 0 16px;
     margin-bottom: 0;
   }
   .problem-header { text-align: center; margin-bottom: 10px; }
@@ -350,6 +350,7 @@
     margin-top: 0; padding-top: 0;
     flex-wrap: wrap;
   }
+  .problem-actions-bottom { margin-top: 14px; }
 
   /* ---------- Bidding table ---------- */
   .bidding-wrap { display: flex; justify-content: center; margin: 18px 0; }
@@ -440,6 +441,10 @@
     background: #7c3aed; color: #fff; border-color: #7c3aed;
   }
   .btn-notes:hover:not(:disabled) { background: #6d28d9; border-color: #6d28d9; }
+  .btn-source { background: #16a34a; color: #fff; border-color: #16a34a; }
+  .btn-source:hover:not(:disabled) { background: #15803d; border-color: #15803d; }
+  .btn-edit { background: #d97706; color: #fff; border-color: #d97706; }
+  .btn-edit:hover:not(:disabled) { background: #b45309; border-color: #b45309; }
 
   /* ---------- Notes iframe container ---------- */
   .notes-frame-wrap {
@@ -1161,8 +1166,6 @@ function displayFormat(p) {
 function renderNavMeta(p) {
   const format = displayFormat(p);
   return [
-    p.dealer ? `<span><strong>Dealer:</strong> ${escapeHtml(p.dealer)}</span>` : '',
-    p.vulnerability ? `<span><strong>Vul:</strong> ${escapeHtml(p.vulnerability)}</span>` : '',
     format ? `<span><strong>Format:</strong> ${escapeHtml(format)}</span>` : '',
   ].filter(Boolean).join('');
 }
@@ -1270,16 +1273,16 @@ function renderSolutionContent(p) {
 
 function renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared }) {
   if (p.is_play_set) {
-    return `<div class="reveal-btns problem-actions-top">
-      <button class="btn btn-notes" id="myNotesBtn">Notes</button>
+    return `<div class="reveal-btns problem-actions-bottom">
+      <button class="btn btn-sm btn-notes" id="myNotesBtn">Notes</button>
       ${handviewerButton(p, p.hands_structured)}
     </div>`;
   }
-  return `<div class="reveal-btns problem-actions-top">
-    ${showSol ? '<button class="btn" id="showSolutionBtn">Solution</button>' : ''}
-    ${!isShared ? '<button class="btn" id="showSourceBtn">Source</button>' : ''}
-    ${!isShared ? '<button class="btn admin-only" id="editBtn">Edit</button>' : ''}
-    <button class="btn btn-notes" id="myNotesBtn">Notes</button>
+  return `<div class="reveal-btns problem-actions-bottom">
+    ${showSol ? '<button class="btn btn-sm btn-primary" id="showSolutionBtn">Solution</button>' : ''}
+    ${!isShared ? '<button class="btn btn-sm btn-source" id="showSourceBtn">Source</button>' : ''}
+    ${!isShared ? '<button class="btn btn-sm btn-edit admin-only" id="editBtn">Edit</button>' : ''}
+    <button class="btn btn-sm btn-notes" id="myNotesBtn">Notes</button>
     ${isSavedSet && !isShared ? `
       <div class="action-menu" id="actionMenu">
         <button class="btn" id="actionBtn">Action ▾</button>
@@ -1300,8 +1303,6 @@ function renderProblemStage(p, displayNum, opts) {
   const showSol = isShared ? _viewingSharedSet.showSolution : true;
   return `
     <div class="problem-card">
-      ${renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared })}
-
       ${playTableAvailable(p)
         ? '<div id="ptMount" class="pt-mount"></div>'
         : `<div class="deal-bidding-row">
@@ -1321,7 +1322,7 @@ function renderProblemStage(p, displayNum, opts) {
 
       ${(() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
 
-      ${''}
+      ${renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared })}
 
     </div>`;
 }
