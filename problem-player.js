@@ -97,5 +97,6 @@ export async function mountProblemPlayer(container, problem, options = {}) {
     cardingEW: options.cardingEW || 'UDCA',
     onComplete: options.onComplete,
     biddingHtml: bidding.buildAuctionHtml(linData),
+    bottomLeftEl: options.bottomLeftEl || null,
   });
 }
