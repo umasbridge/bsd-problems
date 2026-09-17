@@ -706,7 +706,6 @@
   </div>
 </div>
 <div class="nav-controls hidden" id="navControls">
-  <div class="nav-meta" id="navMeta"></div>
   <div class="nav-right">
     <button class="btn btn-sm" id="prev">&larr; Prev</button>
     <span class="nav-pos" id="pos">— / —</span>
@@ -717,6 +716,7 @@
       <button class="btn btn-sm" id="jumpBtn">Go</button>
     </span>
   </div>
+  <div class="nav-meta" id="navMeta"></div>
 </div>
 
 <div id="migrationBanner" class="migration-banner hidden">
@@ -1161,8 +1161,8 @@ function displayFormat(p) {
 function renderNavMeta(p) {
   const format = displayFormat(p);
   return [
-    `<span><strong>Dealer:</strong> ${escapeHtml(p.dealer || '—')}</span>`,
-    `<span><strong>Vul:</strong> ${escapeHtml(p.vulnerability || '—')}</span>`,
+    p.dealer ? `<span><strong>Dealer:</strong> ${escapeHtml(p.dealer)}</span>` : '',
+    p.vulnerability ? `<span><strong>Vul:</strong> ${escapeHtml(p.vulnerability)}</span>` : '',
     format ? `<span><strong>Format:</strong> ${escapeHtml(format)}</span>` : '',
   ].filter(Boolean).join('');
 }
@@ -1177,7 +1177,7 @@ function withLinDeal(p) {
   if (!p?.lin || !globalThis.bpLin?.dealFromLin) return p;
   const deal = globalThis.bpLin.dealFromLin(p.lin);
   if (!deal) return p;
-  const { contract, lead, ...rest } = deal;
+  const { contract, lead, dealer, vulnerability, ...rest } = deal;
   return { ...p, ...rest };
 }
 
