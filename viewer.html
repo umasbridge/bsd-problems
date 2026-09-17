@@ -707,6 +707,7 @@
   .pt-contract-only { display: none; }
   /* Extra breathing room between the action buttons and the deal/play area */
   .pt-mount { margin-top: 0 !important; }
+  .pt-problem-wrap { display: inline-block; max-width: 100%; }
   .pt-complete-result {
     position: static !important;
     margin-top: 6px;
@@ -1333,15 +1334,19 @@ function renderProblemStage(p, displayNum, opts) {
   return `
     <div class="problem-card">
       ${playTableAvailable(p)
-        ? '<div id="ptMount" class="pt-mount"></div>'
+        ? `<div class="pt-problem-wrap">
+             <div id="ptMount" class="pt-mount"></div>
+             ${(() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
+             ${renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared })}
+           </div>`
         : `<div class="deal-bidding-row">
              ${renderBidding(p.bidding)}
              ${renderDeal(p.hands_structured, p.problem_visible_hands || ['N','S'], contractLeadBox)}
            </div>`}
 
-      ${(() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
+      ${playTableAvailable(p) ? '' : (() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
 
-      ${renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared })}
+      ${playTableAvailable(p) ? '' : renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared })}
 
     </div>`;
 }
