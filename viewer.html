@@ -1189,7 +1189,7 @@ function renderNavMeta(p) {
 function setNavPos(num, total) {
   const input = document.getElementById('jumpInput');
   input.value = num;
-  input.style.width = `${String(total).length + 0.8}ch`;
+  input.style.width = `calc(${Math.max(String(total).length, 3)}ch + 14px)`;
   document.getElementById('navTotal').textContent = ` / ${total}`;
 }
 
