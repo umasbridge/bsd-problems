@@ -100,3 +100,45 @@ export async function mountProblemPlayer(container, problem, options = {}) {
     bottomLeftEl: options.bottomLeftEl || null,
   });
 }
+
+export async function mountDdPlayer(container, problem, options = {}) {
+  if (!container) throw new Error('mountDdPlayer requires a container');
+  if (!problem.lin) throw new Error('Problem has no canonical LIN');
+  const { runtime, bidding } = await loadRuntime();
+  const lin = normalizeLin(problem.lin);
+  const linData = bidding.parseLinMetadata(lin);
+
+  const parsed = globalThis.bpPlay?.parseLin?.(lin);
+  let declarer = String(parsed?.declarer || '').toUpperCase();
+  if (!declarer) {
+    const m = (problem.contract || '').match(/\s([NESW])\s*$/i);
+    if (m) declarer = m[1].toUpperCase();
+  }
+
+  const contract = contractFromProblem(problem.contract) || contractFromCalls(linData.bids?.map(e => e.bid));
+
+  const row = {
+    lin,
+    play: [],
+    problem_visible_hands: ['N', 'E', 'S', 'W'],
+    problem_user_hands: ['N', 'E', 'S', 'W'],
+    contract,
+    declarer: declarer || undefined,
+    vul: linData.vul,
+    alwaysPrePlayScript: false,
+  };
+
+  return runtime.mountIpsPlayer(container, {
+    row,
+    mode: 'play',
+    ddsPath: '/bridge-lib/ips/dds/dds-api.js',
+    format: options.format || problem.format || null,
+    cardingNS: options.cardingNS || 'UDCA',
+    cardingEW: options.cardingEW || 'UDCA',
+    ddOn: true,
+    hideDdButton: true,
+    hideAlertButton: true,
+    biddingHtml: bidding.buildAuctionHtml(linData),
+    bottomLeftEl: options.bottomLeftEl || null,
+  });
+}

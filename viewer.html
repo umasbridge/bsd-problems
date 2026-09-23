@@ -455,6 +455,10 @@
   .btn-source:hover:not(:disabled) { background: #15803d; border-color: #15803d; }
   .btn-edit { background: #d97706; color: #fff; border-color: #d97706; }
   .btn-edit:hover:not(:disabled) { background: #b45309; border-color: #b45309; }
+  .btn-play { background: #0284c7; color: #fff; border-color: #0284c7; }
+  .btn-play:hover:not(:disabled) { background: #0369a1; border-color: #0369a1; }
+  .btn-play.btn-play-active { background: #6b7280; border-color: #6b7280; }
+  .btn-play.btn-play-active:hover:not(:disabled) { background: #4b5563; border-color: #4b5563; }
 
   /* ---------- Notes iframe container ---------- */
   .notes-frame-wrap {
@@ -1301,6 +1305,7 @@ function renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared }) {
     ${!isShared ? '<button class="btn btn-sm btn-source" id="showSourceBtn">Source</button>' : ''}
     ${!isShared ? '<button class="btn btn-sm btn-edit admin-only" id="editBtn">Edit</button>' : ''}
     <button class="btn btn-sm btn-notes" id="myNotesBtn">Notes</button>
+    ${playTableAvailable(p) ? '<button class="btn btn-sm btn-play" id="ptPlayModeBtn">▶ Play</button>' : ''}
     ${isSavedSet && !isShared ? `
       <div class="action-menu" id="actionMenu">
         <button class="btn" id="actionBtn">Action ▾</button>
@@ -1327,7 +1332,7 @@ function renderProblemStage(p, displayNum, opts) {
     ? `<div class="contract-lead-box"><strong>Your Bid?</strong></div>`
     : (p.contract || p.lead)
       ? `<div class="contract-lead-box">
-           <div>${colorizeSuits(p.contract || '—')}${declarer ? ' by ' + declarer : ''}</div>
+           <div>${colorizeSuits((p.contract || '—').replace(/\s+[NESW]\s*$/i, '').trim() || '—')}${declarer ? ' by ' + declarer : ''}</div>
            ${p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : ''}
          </div>`
       : '';
@@ -1854,6 +1859,7 @@ let _pt = null; // Legacy player state; retained temporarily until its rendering
 let _ptGen = 0; // bumped on every (re)start so stale async solver loops bail
 let _problemPlayerController = null;
 let _problemPlayerToken = 0;
+let _ptDdPlayMode = false;
 
 // One attempt = one engagement, start→finish, recorded when it ENDS: on
 // completion (solved/unsolved) or give-up (navigating away after playing a
@@ -1887,7 +1893,7 @@ function mountPlayTable(p) {
     bottomLeftEl = document.createElement('div');
     bottomLeftEl.className = 'contract-lead-box';
     bottomLeftEl.innerHTML =
-      `<div>${colorizeSuits(p.contract || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
+      `<div>${colorizeSuits((p.contract || '—').replace(/\s+[NESW]\s*$/i, '').trim() || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
       (p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : '');
   }
   import('./problem-player.js')
@@ -1917,6 +1923,50 @@ function mountPlayTable(p) {
     .catch(err => {
       if (token === _problemPlayerToken && root.isConnected)
         root.innerHTML = `<div class="pt-loading" style="color:#dc2626">Could not load IPS player — ${escapeHtml(String(err && err.message || err))}</div>`;
+    });
+}
+
+function mountDdPlayTable(p) {
+  const root = document.getElementById('ptMount');
+  if (!root) return;
+  const lin = playTableEffectiveLin(p);
+  if (!linIsPlayable(lin)) return;
+  const token = ++_problemPlayerToken;
+  _problemPlayerController?.unmount?.();
+  _problemPlayerController = null;
+  _pt = null;
+  root.innerHTML = '<div class="pt-loading">Loading player…</div>';
+  let bottomLeftEl = null;
+  if (p.contract || p.lead) {
+    const linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
+    let declarer = linParsed?.declarer || null;
+    if (!declarer) {
+      const m = (p.contract || '').match(/\s([NESW])\s*$/i);
+      if (m) declarer = m[1].toUpperCase();
+    }
+    bottomLeftEl = document.createElement('div');
+    bottomLeftEl.className = 'contract-lead-box';
+    bottomLeftEl.innerHTML =
+      `<div>${colorizeSuits((p.contract || '—').replace(/\s+[NESW]\s*$/i, '').trim() || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
+      (p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : '');
+  }
+  import('./problem-player.js')
+    .then(({ mountDdPlayer }) => mountDdPlayer(root, { ...p, lin }, {
+      format: displayFormat(p) || null,
+      cardingNS: globalThis.bpCardingPreferences?.NS || 'UDCA',
+      cardingEW: globalThis.bpCardingPreferences?.EW || 'UDCA',
+      bottomLeftEl,
+    }))
+    .then(controller => {
+      if (token !== _problemPlayerToken || !root.isConnected) {
+        controller?.unmount?.();
+        return;
+      }
+      _problemPlayerController = controller;
+    })
+    .catch(err => {
+      if (token === _problemPlayerToken && root.isConnected)
+        root.innerHTML = `<div class="pt-loading" style="color:#dc2626">Could not load player — ${escapeHtml(String(err && err.message || err))}</div>`;
     });
 }
 
@@ -3876,6 +3926,7 @@ function show(i) {
   if (!problemSet.length) return;
   ptFinalizeIfInteracted();   // record a give-up for the problem we're leaving
   closeNotesPanel();
+  _ptDdPlayMode = false;
   cursor = Math.max(0, Math.min(problemSet.length - 1, i));
   saveSetCursor();
   saveBookProgress();
@@ -3903,6 +3954,14 @@ function show(i) {
   if (notesBtn) notesBtn.addEventListener('click', () => handleOpenNotes(p.problem_id, num));
   const editBtn = document.getElementById('editBtn');
   if (editBtn) editBtn.addEventListener('click', () => window.bpEditor?.openEditor(p, { onSave: onProblemSaved }));
+  const ptPlayModeBtn = document.getElementById('ptPlayModeBtn');
+  if (ptPlayModeBtn) ptPlayModeBtn.addEventListener('click', () => {
+    _ptDdPlayMode = !_ptDdPlayMode;
+    ptPlayModeBtn.textContent = _ptDdPlayMode ? '◀ Problem' : '▶ Play';
+    ptPlayModeBtn.classList.toggle('btn-play-active', _ptDdPlayMode);
+    if (_ptDdPlayMode) mountDdPlayTable(p);
+    else mountPlayTable(p);
+  });
   const resetBtn = document.getElementById('resetBtn');
   if (resetBtn && p.original_snapshot) {
     resetBtn.classList.remove('hidden');
