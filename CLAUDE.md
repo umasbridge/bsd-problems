@@ -5,13 +5,12 @@ Served at `/bridge-problems/viewer.html` inside bsd-app.
 
 ## Files
 
-- `viewer.html` — main app: all layout, CSS, render functions (renderProblemStage, renderDeal, renderBidding, etc.)
+- `viewer.html` — main app: all layout, CSS, render functions (renderProblemStage, mountPlayTable, renderDeal, etc.)
 - `editor.js` — problem editor UI: tabs, panels, drag/drop
 - `db.js` — Supabase client and all data access
 - `lin.js` — LIN format parsing
-- `play.js` — card play logic
-- `playset.js` — play set management
-- `problem-player.js` — card play UI
+- `play.js` — seat helpers and LIN deal/auction parsing (`globalThis.bpPlay`)
+- `problem-player.js` — mounts the problem table: BridgePlayer for played-out problems, DealViewer otherwise
 - `sql/` — schema reference (not served)
 
 ## Auth
@@ -21,7 +20,9 @@ from localStorage is picked up automatically. No separate login needed.
 
 ## Dependencies
 
-Uses `../bridge-lib/ips/` for the IPS card play engine (loaded as browser script tags).
+The problem table comes from bsd-app's `/bridge-lib` (ES modules, loaded at runtime):
+`bridge-player/BridgePlayer.js` (user vs computer play), `deal-viewer/DealViewer.js`
+(view / step through a deal), sharing `bridge-common/` and the `dds/` solver.
 
 ## After making changes here
 

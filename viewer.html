@@ -367,8 +367,6 @@
     font-variant-numeric: tabular-nums;
     color: #000;
   }
-  .attempt-count { text-align: right; font-size: 0.8rem; color: #999; cursor: pointer; margin: 4px 0; }
-  .attempt-count:hover { color: #666; text-decoration: underline; }
   .bidding-notes { text-align: left; font-size: 0.85rem; color: #555; margin-top: 6px; }
   .bidding-notes summary { cursor: pointer; font-style: italic; color: #888; }
   .bidding-notes div { margin: 2px 0; }
@@ -541,25 +539,6 @@
   }
   .modal-body label.field-label:first-child { margin-top: 0; }
   .modal-body .field-label { font-size: 0.875rem; font-weight: 600; color: var(--text); margin: 12px 0 4px; }
-  #gradeModal .modal { max-width: 760px; }
-  .grade-empty { font-size: 0.85rem; color: var(--text-soft); }
-  .grade-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  .grade-table th, .grade-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
-  .grade-table th { color: var(--text-soft); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.02em; text-align: center; }
-  /* Centre the # (attempts), Retries, After-tricks and Grade columns. */
-  .grade-table th:nth-child(1), .grade-table td:nth-child(1),
-  .grade-table th:nth-child(4), .grade-table td:nth-child(4),
-  .grade-table th:nth-child(5), .grade-table td:nth-child(5),
-  .grade-table th:nth-child(6), .grade-table td:nth-child(6) { text-align: center; }
-  .grade-table th:nth-child(6), .grade-table td:nth-child(6) { width: 1%; white-space: nowrap; }
-  /* Override .modal-body input[type=number] {width:100px} with a more specific selector. */
-  #gradeModal .grade-input { width: 34px; min-width: 0; padding: 3px 2px; border: 1px solid var(--border-strong); border-radius: 4px; text-align: center; -moz-appearance: textfield; }
-  #gradeModal .grade-input::-webkit-inner-spin-button, #gradeModal .grade-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-  /* Remarks takes all remaining width; the textarea fills its cell. */
-  .grade-table th.remarks-cell, .grade-table td.remarks-cell { width: 100%; white-space: normal; }
-  .remarks-input { width: 100%; min-width: 240px; box-sizing: border-box; padding: 4px 6px; border: 1px solid var(--border-strong); border-radius: 4px; font: inherit; resize: vertical; }
-  .grade-table tbody tr:last-child td { border-bottom: none; }
-  .grade-table td:nth-child(2) { color: var(--text-soft); }
   .modal-body input[type="number"] {
     width: 100px;
     padding: 8px 10px;
@@ -576,24 +555,6 @@
     box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
   }
   .field-hint { font-size: 0.75rem; color: var(--text-soft); margin-top: 4px; }
-
-  /* Stats listing inside content modal */
-  .stats-list { display: flex; flex-direction: column; gap: 12px; }
-  .stats-item {
-    border: 1px solid var(--border); border-radius: 6px;
-    padding: 12px 14px; background: #fff;
-  }
-  .stats-problem-name {
-    font-weight: 600; margin: 0 0 6px; color: #000; font-size: 0.95rem;
-  }
-  .stats-attempt {
-    font-size: 0.875rem; color: #000;
-    display: flex; justify-content: space-between; gap: 12px;
-    padding: 2px 0; flex-wrap: wrap;
-  }
-  .stats-attempt strong { color: #000; }
-  .stats-meta { color: var(--text-soft); font-size: 0.8125rem; }
-  .stats-empty { padding: 24px; text-align: center; color: var(--text-muted); }
 
   /* Admin-only controls hidden when the body lacks the .is-admin class. */
   body:not(.is-admin) .admin-only { display: none !important; }
@@ -708,8 +669,6 @@
     font-size: 0.7rem; color: var(--text-muted);
     font-weight: 400; margin-left: 4px;
   }
-  /* IPS: hide the contract-only box (contract is shown below in the problem card) */
-  .pt-contract-only { display: none; }
   /* Extra breathing room between the action buttons and the deal/play area */
   .pt-mount { margin-top: 0 !important; }
   .pt-complete-result {
@@ -832,22 +791,6 @@
   </div>
 </div>
 
-<!-- Self-grade modal -->
-<div id="gradeModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="gradeModalTitle">Self Grade</h2>
-      <button class="modal-close" id="gradeModalClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div id="gradeAttempts" class="grade-attempts"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" id="gradeModalCancel">Close</button>
-    </div>
-  </div>
-</div>
-
 <!-- Tags/Level modals removed — tags & level live in the Edit dialog (Source / Tags / Level tab). -->
 
 <!-- Solution / Source content modal -->
@@ -887,48 +830,6 @@
 
 <!-- Interactive Library — full page view (replaces modal) -->
 <!-- (modal removed; library is now shown as viewLibrary inline) -->
-
-<!-- Play set direction picker modal -->
-<div id="playSetModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
-  <div class="modal" style="max-width:360px">
-    <div class="modal-header">
-      <h2 id="playSetTitle">Play Deal Set</h2>
-      <button class="modal-close" id="playSetClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
-      <p style="margin:0;font-size:0.9rem;color:var(--text-soft)">Which direction would you like to play?</p>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button class="btn" data-psdir="N" style="min-width:52px;font-weight:600">N</button>
-        <button class="btn" data-psdir="S" style="min-width:52px;font-weight:600">S</button>
-        <button class="btn" data-psdir="E" style="min-width:52px;font-weight:600">E</button>
-        <button class="btn" data-psdir="W" style="min-width:52px;font-weight:600">W</button>
-      </div>
-      <div>
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text-soft);margin-bottom:8px">Play settings</div>
-        <div style="font-size:0.8rem;color:var(--text-soft);margin-bottom:4px">Carding</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.85rem;color:var(--text)">
-            NS pair
-            <select data-carding="NS" style="padding:6px 8px;border:1px solid var(--border-strong);border-radius:4px;font:inherit;font-size:0.9rem;background:var(--bg);color:var(--text)">
-              <option value="UDCA">UDCA</option>
-              <option value="STD">Standard</option>
-            </select>
-          </label>
-          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.85rem;color:var(--text)">
-            EW pair
-            <select data-carding="EW" style="padding:6px 8px;border:1px solid var(--border-strong);border-radius:4px;font:inherit;font-size:0.9rem;background:var(--bg);color:var(--text)">
-              <option value="UDCA">UDCA</option>
-              <option value="STD">Standard</option>
-            </select>
-          </label>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--border)">
-        <button class="btn btn-primary" id="playSetStart" disabled style="min-width:80px">Play →</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Open-book order picker modal -->
 <div id="bookOrderModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
@@ -1062,7 +963,6 @@
 
 <script src="./lin.js"></script>
 <script src="./play.js"></script>
-<script src="../bridge-lib/ips/ips.js?v=9"></script>
 <script>
 /* Admin gate (.is-admin body class) is set asynchronously by the module
    <script> at the bottom of this file, after canEdit() resolves against
@@ -1206,44 +1106,6 @@ function withLinDeal(p) {
   return { ...p, ...rest };
 }
 
-function renderBidding(bidding) {
-  if (!bidding) return '';
-  let columns, rows;
-  if (Array.isArray(bidding.columns) && Array.isArray(bidding.rows)) {
-    // New format: {columns: ["South","West",...], rows: [[...],[...],...]}
-    columns = bidding.columns;
-    rows = bidding.rows;
-  } else if (Array.isArray(bidding.calls) && bidding.calls.length) {
-    // Old format: {dealer: "S", calls: [...]}
-    const startIdx = SEAT_ORDER.indexOf(bidding.dealer);
-    if (startIdx < 0) return '';
-    const NAMES = {W:'West',N:'North',E:'East',S:'South'};
-    columns = SEAT_ORDER.map(s => NAMES[s]);
-    rows = [];
-    for (let i = 0; i < bidding.calls.length; i++) {
-      const colIdx = (startIdx + i) % 4;
-      const rowIdx = Math.floor((startIdx + i) / 4);
-      if (!rows[rowIdx]) rows[rowIdx] = ['', '', '', ''];
-      rows[rowIdx][colIdx] = bidding.calls[i];
-    }
-  } else {
-    return '';
-  }
-  const head = columns.map(s => `<th>${escapeHtml(s)}</th>`).join('');
-  const body = rows.map(r =>
-    `<tr>${r.map(c => `<td>${c && c !== '—' ? colorizeSuits(c) : ''}</td>`).join('')}</tr>`
-  ).join('');
-  let notes = '';
-  if (bidding.notes && Object.keys(bidding.notes).length) {
-    notes = '<details class="bidding-notes"><summary>Bidding notes</summary>' +
-      Object.entries(bidding.notes)
-        .sort(([a],[b]) => a - b)
-        .map(([k,v]) => `<div>(${k}) ${escapeHtml(v)}</div>`)
-        .join('') + '</details>';
-  }
-  return `<div class="bidding-wrap"><table class="bidding"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${notes}`;
-}
-
 /* Anchors written by the new editor are zero-width-space-wrapped diag ids:
    `​[diag-XXXX]​`. Those are stripped from the rendered text. Legacy prose
    anchors (free-text phrases from the source data) stay visible. */
@@ -1294,18 +1156,11 @@ function renderSolutionContent(p) {
 }
 
 function renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared }) {
-  if (p.is_play_set) {
-    return `<div class="reveal-btns problem-actions-bottom">
-      <button class="btn btn-sm btn-notes" id="myNotesBtn">Notes</button>
-      ${handviewerButton(p, p.hands_structured)}
-    </div>`;
-  }
   return `<div class="reveal-btns problem-actions-bottom">
     ${showSol ? '<button class="btn btn-sm btn-primary" id="showSolutionBtn">Solution</button>' : ''}
     ${!isShared ? '<button class="btn btn-sm btn-source" id="showSourceBtn">Source</button>' : ''}
     ${!isShared ? '<button class="btn btn-sm btn-edit admin-only" id="editBtn">Edit</button>' : ''}
     <button class="btn btn-sm btn-notes" id="myNotesBtn">Notes</button>
-    ${playTableAvailable(p) ? '<button class="btn btn-sm btn-play" id="ptPlayModeBtn">▶ Play</button>' : ''}
     ${isSavedSet && !isShared ? `
       <div class="action-menu" id="actionMenu">
         <button class="btn" id="actionBtn">Action ▾</button>
@@ -1319,16 +1174,14 @@ function renderProblemActions(p, { isSavedSet, hideGrade, showSol, isShared }) {
   </div>`;
 }
 
-function renderProblemStage(p, displayNum, opts) {
-  p = withLinDeal(p);
-  const { isSavedSet, hideGrade } = opts || {};
-  const isShared = !!_viewingSharedSet;
-  const showSol = isShared ? _viewingSharedSet.showSolution : true;
+// Contract/lead box (or "Your Bid?" for bidding problems) for the bottom-left
+// corner of a deal. p should already have been through withLinDeal.
+function contractLeadBoxHtml(p) {
   const isBidding = (p.subcategory || '').toLowerCase() === 'bidding';
   const _linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
   let declarer = _linParsed?.declarer || null;
   if (!declarer) { const _m = (p.contract || '').match(/\s([NESW])\s*$/i); if (_m) declarer = _m[1].toUpperCase(); }
-  const contractLeadBox = isBidding
+  return isBidding
     ? `<div class="contract-lead-box"><strong>Your Bid?</strong></div>`
     : (p.contract || p.lead)
       ? `<div class="contract-lead-box">
@@ -1336,14 +1189,16 @@ function renderProblemStage(p, displayNum, opts) {
            ${p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : ''}
          </div>`
       : '';
+}
+
+function renderProblemStage(p, displayNum, opts) {
+  p = withLinDeal(p);
+  const { isSavedSet, hideGrade } = opts || {};
+  const isShared = !!_viewingSharedSet;
+  const showSol = isShared ? _viewingSharedSet.showSolution : true;
   return `
     <div class="problem-card">
-      ${playTableAvailable(p)
-        ? '<div id="ptMount" class="pt-mount"></div>'
-        : `<div class="deal-bidding-row">
-             ${renderBidding(p.bidding)}
-             ${renderDeal(p.hands_structured, p.problem_visible_hands || ['N','S'], contractLeadBox)}
-           </div>`}
+      <div id="ptMount" class="pt-mount"></div>
 
       ${(() => { const t = stripContractLeadPrefix(p.problem_text); return t ? `<div class="problem-text">${colorizeSuits(t)}</div>` : ''; })()}
 
@@ -1401,9 +1256,11 @@ function tryExtractDealFromSolution(sol) {
    backfill script). */
 
 let _solutionLin = null;
+let _solutionContract = null;
 
-function openSolutionHandviewer() {
-  if (_solutionLin) openHandviewerWithLin(_solutionLin);
+function openSolutionDdPlay() {
+  if (!_solutionLin) return;
+  import('/bridge-lib/ddplay/DDPlay.js').then(m => m.openDdPlay(_solutionLin, _solutionContract || undefined));
 }
 
 function openHandviewerWithLin(lin) {
@@ -1477,7 +1334,8 @@ function handviewerButton(p, hands) {
   // button appears only for playable ones.
   _solutionLin = p.lin || problemToLin(p, hands);
   if (!linIsPlayable(_solutionLin)) { _solutionLin = null; return ''; }
-  return `<div style="margin-bottom:8px"><button class="btn" onclick="openSolutionHandviewer()">Open in Handviewer</button></div>`;
+  _solutionContract = p.contract || null;
+  return `<div style="margin-bottom:8px"><button class="btn" onclick="openSolutionDdPlay()">▶ DD Play</button></div>`;
 }
 
 /* ---------- "Play it out" — key in a position / end position ----------
@@ -1765,39 +1623,17 @@ function openPositionModal(prefill) {
   m.querySelector('#posCloseBtn').addEventListener('click', closePositionModal);
 }
 
-/* ---------- "Play it out" — interactive DDS play table --------------------
-   A modal that plays the deal from the problem's decision point. The user
-   clicks the cards of the visible side (declarer + dummy for declarer-play
-   problems, the one defender for defence problems); a double-dummy solver
-   (self-hosted bridge-dds wasm) plays every hidden seat — including the
-   defender's partner — choosing the DD-optimal card for the side to move.
-   All rules and DDS encoding live in play.js (globalThis.bpPlay); this file
-   only renders and drives the loop. Distinct from openPositionModal above,
-   which keys a position into the BBO handviewer. */
+/* ---------- Problem table ------------------------------------------------
+   The deal area of each problem comes from bsd-app's /bridge-lib components
+   (see problem-player.js): BridgePlayer when the problem is played out,
+   DealViewer's display-only table otherwise. */
 
-// The play button appears exactly when the row has a playable LIN (the same
-// gate as the solution-page handviewer button).
+// The problem's LIN, or one built from its stored hands.
 function playTableEffectiveLin(p) {
   let lin = p.lin;
   if (!lin) { try { lin = problemToLin(p, p.hands_structured); } catch (e) { lin = null; } }
   return lin;
 }
-function playTableAvailable(p) {
-  return linIsPlayable(playTableEffectiveLin(p));
-}
-
-const suitHex = su => (SUIT_COLOR[su] === 'red' ? '#c0241c' : '#111');
-const ptSleep = ms => new Promise(r => setTimeout(r, ms));
-
-// Wrong-card alert toggle: off by default, persisted in localStorage.
-let _ptAlertOn = localStorage.getItem('bpAlertOn') === '1';
-function ptToggleAlert() {
-  _ptAlertOn = !_ptAlertOn;
-  localStorage.setItem('bpAlertOn', _ptAlertOn ? '1' : '0');
-  if (!_ptAlertOn && _pt) { _pt.warn = null; }
-  ptRender();
-}
-
 // Carding preferences for computer play: persisted in localStorage.
 function loadCardingPrefs() {
   try { return JSON.parse(localStorage.getItem('bpCarding') || 'null'); } catch(e) { return null; }
@@ -1844,119 +1680,38 @@ function cardingFromModal(modal) {
 
 syncPlaySettings();
 
-// Lazy-loaded DDS (double-dummy solver): ~0.5 MB wasm, fetched on first open.
-let _ptDds = null, _ptDdsLoading = null;
-function ensureDds() {
-  if (_ptDds) return Promise.resolve(_ptDds);
-  if (!_ptDdsLoading) {
-    _ptDdsLoading = import('/bridge-lib/ips/dds/dds-api.js')
-      .then(m => m.loadDds().then(mod => (_ptDds = new m.Dds(mod))));
-  }
-  return _ptDdsLoading;
-}
-
-let _pt = null; // Legacy player state; retained temporarily until its rendering code is removed.
-let _ptGen = 0; // bumped on every (re)start so stale async solver loops bail
 let _problemPlayerController = null;
 let _problemPlayerToken = 0;
-let _ptDdPlayMode = false;
 
-// One attempt = one engagement, start→finish, recorded when it ENDS: on
-// completion (solved/unsolved) or give-up (navigating away after playing a
-// card / clicking Retry). Retries belong to the attempt. The live session
-// lives on _pt.session and survives Retry (which resets only the play-state).
-function ptFreshSession() {
-  return { interacted: false, recorded: false, retries: [], optimalUserFinal: null, userSide: null };
-}
-
-// Mount the interactive table into the problem card's #ptMount element (it
-// replaces the static deal for playable rows). Lazy-loads the DDS solver.
-// A no-op when there is no #ptMount (non-playable rows keep the static deal).
+// Mount the table into the problem card's #ptMount element: BridgePlayer for
+// problems that are played out (declarer play / defense / play-set boards),
+// DealViewer's display-only table for everything else.
 function mountPlayTable(p) {
   const root = document.getElementById('ptMount');
   if (!root) return;
   const lin = playTableEffectiveLin(p);
-  if (!linIsPlayable(lin)) return;
+  const playable = linIsPlayable(lin);
   const token = ++_problemPlayerToken;
   _problemPlayerController?.unmount?.();
   _problemPlayerController = null;
-  _pt = null;
   root.innerHTML = '<div class="pt-loading">Loading player…</div>';
-  let bottomLeftEl = null;
-  if (p.contract || p.lead) {
-    const linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
-    let declarer = linParsed?.declarer || null;
-    if (!declarer) {
-      const m = (p.contract || '').match(/\s([NESW])\s*$/i);
-      if (m) declarer = m[1].toUpperCase();
-    }
-    bottomLeftEl = document.createElement('div');
-    bottomLeftEl.className = 'contract-lead-box';
-    bottomLeftEl.innerHTML =
-      `<div>${colorizeSuits((p.contract || '—').replace(/\s+[NESW]\s*$/i, '').trim() || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
-      (p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : '');
-  }
+  const playerOpts = {
+    cardingNS: globalThis.bpCardingPreferences?.NS || 'UDCA',
+    cardingEW: globalThis.bpCardingPreferences?.EW || 'UDCA',
+    onComplete: result => {
+      pushAttempt(p.problem_id || p.id, {
+        ...result,
+        grade: null,
+        remarks: '',
+      });
+    },
+  };
   import('./problem-player.js')
-    .then(({ mountProblemPlayer }) => mountProblemPlayer(root, { ...p, lin }, {
-      format: displayFormat(p) || null,
-      cardingNS: globalThis.bpCardingPreferences?.NS || 'UDCA',
-      cardingEW: globalThis.bpCardingPreferences?.EW || 'UDCA',
-      bottomLeftEl,
-      onComplete: result => {
-        if (_isPlaySetMode) return;
-        pushAttempt(p.problem_id || p.id, {
-          ...result,
-          grade: null,
-          remarks: '',
-        });
-        const btn = document.getElementById('selfGradeBtn');
-        if (btn) btn.disabled = false;
-      },
-    }))
-    .then(controller => {
-      if (token !== _problemPlayerToken || !root.isConnected) {
-        controller?.unmount?.();
-        return;
-      }
-      _problemPlayerController = controller;
+    .then(async ({ mountBridgePlayerForProblem, mountProblemDisplay }) => {
+      const dp = withLinDeal(p);
+      return (playable && await mountBridgePlayerForProblem(root, { ...p, lin }, playerOpts))
+        || mountProblemDisplay(root, dp, { bottomLeftHtml: contractLeadBoxHtml(dp) });
     })
-    .catch(err => {
-      if (token === _problemPlayerToken && root.isConnected)
-        root.innerHTML = `<div class="pt-loading" style="color:#dc2626">Could not load IPS player — ${escapeHtml(String(err && err.message || err))}</div>`;
-    });
-}
-
-function mountDdPlayTable(p) {
-  const root = document.getElementById('ptMount');
-  if (!root) return;
-  const lin = playTableEffectiveLin(p);
-  if (!linIsPlayable(lin)) return;
-  const token = ++_problemPlayerToken;
-  _problemPlayerController?.unmount?.();
-  _problemPlayerController = null;
-  _pt = null;
-  root.innerHTML = '<div class="pt-loading">Loading player…</div>';
-  let bottomLeftEl = null;
-  if (p.contract || p.lead) {
-    const linParsed = globalThis.bpPlay?.parseLin?.(p.lin);
-    let declarer = linParsed?.declarer || null;
-    if (!declarer) {
-      const m = (p.contract || '').match(/\s([NESW])\s*$/i);
-      if (m) declarer = m[1].toUpperCase();
-    }
-    bottomLeftEl = document.createElement('div');
-    bottomLeftEl.className = 'contract-lead-box';
-    bottomLeftEl.innerHTML =
-      `<div>${colorizeSuits((p.contract || '—').replace(/\s+[NESW]\s*$/i, '').trim() || '—')}${declarer ? ' by ' + declarer : ''}</div>` +
-      (p.lead ? `<div><strong>Lead:</strong> ${colorizeSuits(p.lead)}</div>` : '');
-  }
-  import('./problem-player.js')
-    .then(({ mountDdPlayer }) => mountDdPlayer(root, { ...p, lin }, {
-      format: displayFormat(p) || null,
-      cardingNS: globalThis.bpCardingPreferences?.NS || 'UDCA',
-      cardingEW: globalThis.bpCardingPreferences?.EW || 'UDCA',
-      bottomLeftEl,
-    }))
     .then(controller => {
       if (token !== _problemPlayerToken || !root.isConnected) {
         controller?.unmount?.();
@@ -1969,734 +1724,6 @@ function mountDdPlayTable(p) {
         root.innerHTML = `<div class="pt-loading" style="color:#dc2626">Could not load player — ${escapeHtml(String(err && err.message || err))}</div>`;
     });
 }
-
-// (Re)build the opening position and render. Auto-plays the given opening
-// lead (not a user decision); the ▶ stepper covers the recorded play beyond
-// the lead, up to the decision point.
-function ptStart() {
-  if (!_pt) return;
-  const P = _pt.P;
-  const setup = P.setupFromRow(_pt.row);
-  if (!setup) { _pt.root.innerHTML = '<div class="pt-loading">This deal is not playable.</div>'; return; }
-  // Note: _pt.session is NOT reset here — Retry resets only the play-state, the
-  // attempt (interacted/retries/target) spans the whole engagement.
-  Object.assign(_pt, setup, { locked: false, illegalKey: null, warn: null, scriptIdx: 0, userActed: false, retryArmed: false, awaitingAdvance: false, claiming: false, claimMax: null, claimMin: null, claimError: null, claimed: false, result: null, gen: ++_ptGen, history: [], viewTrick: null });
-  _pt.contract = parseContractStr(_pt.row.contract);
-  if (_pt.script.length >= 1) { P.applyCard(_pt.state, _pt.script[0]); _pt.scriptIdx = 1; }
-  ptRender();
-  if (_pt.scriptIdx >= _pt.script.length && !P.isComplete(_pt.state) && !_pt.userSeats.has(_pt.state.turn)) {
-    ptRunProgram();
-  }
-}
-
-// True while the user is still stepping through the recorded play-so-far.
-function ptStepping() { return !!(_pt && _pt.script && _pt.scriptIdx < _pt.script.length); }
-
-// Play the next recorded card (fired by the ▶). The cards already played stay
-// on the table; a completed trick remains visible (▶ shown at centre) until
-// the next click clears it and plays the winner's card.
-function ptStepForward() {
-  if (!_pt || _pt.scriptIdx >= _pt.script.length) return;
-  const P = _pt.P;
-  P.applyCard(_pt.state, _pt.script[_pt.scriptIdx++]);
-  ptRender();
-  if (_pt.scriptIdx >= _pt.script.length && !P.isComplete(_pt.state) && !_pt.userSeats.has(_pt.state.turn)) {
-    ptRunProgram();
-  }
-}
-
-async function ptRunProgram() {
-  if (!_pt) return;
-  const mine = _pt, gen = mine.gen, P = mine.P;   // navigation reassigns _pt; retry/restart bumps gen
-  const alive = () => _pt === mine && mine.gen === gen;
-  mine.locked = true;
-  ptRender();
-  while (alive() && !P.isComplete(mine.state) && !mine.userSeats.has(mine.state.turn) && !mine.awaitingAdvance) {
-    await ptSleep(700);
-    if (!alive()) return;   // navigated away, or reset via Retry, mid-play
-    P.programMove(_ptDds, mine.state, mine.userSeats, mine.declarer);
-    if (!P.isComplete(mine.state) && mine.state.trick.length === 0) {
-      // hold the four cards; only wait for ▶ if the computer leads next
-      if (!mine.userSeats.has(mine.state.turn)) mine.awaitingAdvance = true;
-      mine.locked = false;
-      ptRender();
-      return;
-    }
-    ptRender();
-  }
-  if (!alive()) return;
-  mine.locked = false;
-  ptRender();
-  if (P.isComplete(mine.state)) ptCommitAttempt(false);
-}
-
-function ptOnCardClick(seat, suit, rank) {
-  if (!_pt || _pt.locked || ptStepping() || _pt.awaitingAdvance || _pt.viewTrick !== null) return;
-  const P = _pt.P;
-  if (_pt.state.turn !== seat || !_pt.userSeats.has(seat)) return;
-  if (!P.isLegal(_pt.state, { suit, rank }, seat)) {
-    const mine = _pt;
-    mine.illegalKey = seat + suit + rank;
-    ptRender();
-    setTimeout(() => { if (_pt === mine) { mine.illegalKey = null; ptRender(); } }, 400);
-    return;
-  }
-  _pt.illegalKey = null;
-  _pt.warn = _ptAlertOn ? ptEvaluateCard(seat, { suit, rank }) : null;
-  ptCaptureTarget();               // fix the DD ceiling at the user's first decision (once per attempt)
-  _pt.session.interacted = true;   // a real attempt is under way
-  _pt.userActed = true;            // arms the Retry control for this play-through
-  _pt.history.push(_pt.P.cloneState(_pt.state));
-  P.applyCard(_pt.state, { suit, rank });
-  if (P.isComplete(_pt.state)) {
-    ptRender();
-    if (_isEmbedMode) {
-      try { window.parent.postMessage({ type: 'ps:complete', ns: _pt.state.nsTricks, ew: _pt.state.ewTricks }, '*'); } catch(e) {}
-    }
-    ptCommitAttempt(false);
-    return;
-  }
-  if (_pt.state.trick.length === 0) {
-    if (!_pt.userSeats.has(_pt.state.turn)) _pt.awaitingAdvance = true; // computer leads next — wait for ▶
-    ptRender(); return;
-  }
-  ptRender();
-  if (!_pt.userSeats.has(_pt.state.turn)) ptRunProgram();
-}
-
-// Close the just-completed trick (shown at the boundary) and continue: the
-// solver plays the next card, or it becomes the user's turn.
-function ptAdvance() {
-  if (!_pt || !_pt.awaitingAdvance) return;
-  _pt.awaitingAdvance = false;
-  ptRender();
-  if (!_pt.P.isComplete(_pt.state) && !_pt.userSeats.has(_pt.state.turn)) ptRunProgram();
-}
-function ptUndo() {
-  if (!_pt || !_pt.history.length || ptStepping()) return;
-  _pt.state = _pt.history.pop();
-  _pt.awaitingAdvance = false;
-  _pt.locked = false;
-  _pt.warn = null;
-  _pt.viewTrick = null;
-  ptRender();
-}
-function ptPrevTrick() {
-  if (!_pt) return;
-  const n = _pt.state.tricks.length;
-  if (n === 0) return;
-  _pt.viewTrick = _pt.viewTrick === null ? n - 1 : Math.max(0, _pt.viewTrick - 1);
-  ptRender();
-}
-function ptNextTrick() {
-  if (!_pt || _pt.viewTrick === null) return;
-  _pt.viewTrick = _pt.viewTrick >= _pt.state.tricks.length - 1 ? null : _pt.viewTrick + 1;
-  ptRender();
-}
-// The center ▶ either steps the recorded play (stepping) or advances past a
-// completed trick during live play.
-function ptProceed() {
-  if (!_pt) return;
-  return _pt.awaitingAdvance ? ptAdvance() : ptStepForward();
-}
-
-// Retry: reset to the start. A retry within an in-progress attempt is logged
-// (how many tricks were played before resetting); clicking Retry also marks
-// the session as a real attempt. Bumps the generation so any stale solver
-// loop stops.
-function ptRetryClick() {
-  if (!_pt) return;
-  const s = _pt.session;
-  if (s.interacted && !s.recorded) s.retries.push({ tricks: _pt.state.tricks.length, at: Date.now() });
-  s.interacted = true;
-  ptStart();
-}
-
-function ptUserSide() { return _pt.P.sideOf([..._pt.userSeats][0]); }
-
-// ---- claim / concede -----------------------------------------------------
-// Defenders concede all remaining tricks (no check needed). Declarer claims a
-// number of the remaining tricks, validated against the double-dummy maximum
-// from the current position — i.e. the claim must hold against best defense,
-// whatever the defenders play from here.
-
-// Whole tricks still to be played (completed tricks are already in state.tricks).
-function ptTricksRemaining() { return 13 - _pt.state.tricks.length; }
-
-// Double-dummy tricks the declaring side can still win from the current
-// position, computed by playing the deal out DDS-vs-DDS on a clone. This is
-// the same optimal-play machinery the table already trusts for hidden seats,
-// and it stays correct in degenerate single-suit endings where a raw
-// SolveBoard score can misreport. The state is plain data (no functions), so
-// a JSON clone is a faithful copy.
-function ptDeclarerDdFuture() {
-  const P = _pt.P, declSide = P.sideOf(_pt.declarer);
-  const c = JSON.parse(JSON.stringify(_pt.state));
-  const before = declSide === 'NS' ? c.nsTricks : c.ewTricks;
-  let guard = 0;
-  while (!P.isComplete(c) && guard++ < 80) P.programMove(_ptDds, c);
-  return (declSide === 'NS' ? c.nsTricks : c.ewTricks) - before;
-}
-
-// Minimum future tricks the declaring side can guarantee, assuming they may
-// play ANY legal card now (worst case first move, both sides DD-optimal after).
-// If this equals claimMax, no first move goes wrong. If less, some moves fail —
-// a claim is only safe for N ≤ claimMin.
-function ptDeclarerDdMinFuture() {
-  if (!_ptDds) return 0;
-  const P = _pt.P, declSide = P.sideOf(_pt.declarer);
-  const state = _pt.state;
-  // Fast path: single SolveBoard. score[i] = future tricks for the side to
-  // move if they play card i (rest plays DD-optimally). Min across all cards
-  // is the worst first move. Valid as long as no score is negative.
-  const ft = _ptDds.SolveBoardPBN(P.toDealPbn(state), -1, 3, 0);
-  let minScore = Infinity, hasDegenerate = false;
-  for (let i = 0; i < ft.cards; i++) {
-    if (ft.score[i] < 0) { hasDegenerate = true; break; }
-    if (ft.score[i] < minScore) minScore = ft.score[i];
-  }
-  if (!hasDegenerate) return minScore === Infinity ? 0 : minScore;
-  // Slow fallback for degenerate single-suit endings where raw score is -2:
-  // apply each legal card, play rest to completion, count declaring tricks.
-  const moves = P.legalMoves(state);
-  let minFuture = Infinity;
-  for (const card of moves) {
-    const c = JSON.parse(JSON.stringify(state));
-    const before = declSide === 'NS' ? c.nsTricks : c.ewTricks;
-    P.applyCard(c, card);
-    let guard = 0;
-    while (!P.isComplete(c) && guard++ < 80) P.programMove(_ptDds, c);
-    const future = (declSide === 'NS' ? c.nsTricks : c.ewTricks) - before;
-    if (future < minFuture) minFuture = future;
-  }
-  return minFuture === Infinity ? 0 : minFuture;
-}
-
-// Claim button is enabled only when the result is already locked in by tricks
-// won so far — declarer has taken enough to make, or defense has taken enough
-// to set. No DDS needed; pure trick-count check.
-function ptCanClaim() {
-  if (!_pt || !_pt.contract) return false;
-  const st = _pt.state;
-  if (_pt.P.isComplete(st) || ptStepping() || _pt.locked || _pt.claiming) return false;
-  const makeTricks = Number(_pt.contract.level) + 6;
-  const declSide = _pt.P.sideOf(_pt.declarer);
-  const declWon = declSide === 'NS' ? st.nsTricks : st.ewTricks;
-  const defWon  = declSide === 'NS' ? st.ewTricks : st.nsTricks;
-  return ptUserSide() === declSide ? declWon >= makeTricks : defWon >= (14 - makeTricks);
-}
-
-// Claim: the result is already determined (ptCanClaim guarantees this).
-// Finish the deal immediately; use DD-optimal play to award the remaining
-// tricks so the final overtrick/undertrick count is accurate.
-function ptClaimOpen() {
-  if (!ptCanClaim()) return;
-  const declFuture = _ptDds ? ptDeclarerDdFuture() : 0;
-  ptFinishWith(declFuture);
-}
-
-function ptClaimCancel() {
-  if (!_pt) return;
-  _pt.claiming = false; _pt.claimError = null;
-  ptRender();
-}
-
-// Finalise the deal: award `declFuture` of the remaining tricks to the
-// declaring side, the rest to the defenders, then collapse the position so
-// isComplete() is true and the normal result banner / attempt recording fire.
-function ptFinishWith(declFuture) {
-  const st = _pt.state, P = _pt.P;
-  // Fix the DD ceiling and mark a real attempt BEFORE collapsing the hands
-  // (ddSuggest needs the live position). A claim/concede is a real engagement.
-  ptCaptureTarget();
-  _pt.session.interacted = true;
-  _pt.userActed = true;
-  const declSide = P.sideOf(_pt.declarer);
-  const declNow = declSide === 'NS' ? st.nsTricks : st.ewTricks;
-  const declTotal = declNow + declFuture;
-  st.nsTricks = declSide === 'NS' ? declTotal : 13 - declTotal;
-  st.ewTricks = declSide === 'NS' ? 13 - declTotal : declTotal;
-  for (const s of P.SEATS) for (const su of P.SUITS) st.remaining[s][su] = [];
-  st.trick = [];
-  _pt.claiming = false;
-  _pt.claimed = true;
-  ptRender();
-  ptCommitAttempt(false);
-}
-
-// Defenders concede every remaining trick to declarer.
-function ptConcedeAll() {
-  if (!_pt) return;
-  ptFinishWith(ptTricksRemaining());
-}
-
-// Declarer claims `n` of the remaining tricks. Rejected if:
-//  (1) n exceeds the DD max (best-play ceiling against best defense), or
-//  (2) n exceeds the DD min (some legal card falls short — user could go wrong).
-function ptDeclarerClaim(n) {
-  if (!_pt) return;
-  const remaining = ptTricksRemaining();
-  const max = _pt.claimMax == null ? 0 : _pt.claimMax;
-  const min = _pt.claimMin == null ? max : _pt.claimMin;
-  n = Math.floor(Number(n));
-  if (!Number.isFinite(n) || n < 0 || n > remaining) {
-    _pt.claimError = `Enter a number between 0 and ${remaining}.`;
-    ptRender(); return;
-  }
-  if (n > max) {
-    _pt.claimError = `Double-dummy you can take only ${max} more trick${max === 1 ? '' : 's'} from here against best defense — claim rejected.`;
-    ptRender(); return;
-  }
-  if (n > min) {
-    _pt.claimError = `You could go wrong from here — not all lines guarantee ${n} trick${n === 1 ? '' : 's'}. You can safely claim at most ${min}.`;
-    ptRender(); return;
-  }
-  ptFinishWith(n);
-}
-
-// Immediate feedback: is `card` (about to be played by `seat`) a losing play?
-// The decisive error is crossing the contract line — declarer's side dropping
-// from making to going down → "costs you the contract"; the defense dropping
-// from beating it to letting it make → "sells the contract" — and is flagged
-// in every format. At matchpoints (format MP) EVERY trick scores, so a card
-// that merely drops a trick without crossing the line is still flagged as the
-// over/undertrick it costs. IMP problems ignore those. Returns the message or
-// null. One DD solve on the pre-play position; needs a contract + loaded solver.
-function ptEvaluateCard(seat, card) {
-  if (!_ptDds || !_pt.contract) return null;
-  const P = _pt.P, st = _pt.state;
-  const side = P.sideOf(seat), declSide = P.sideOf(_pt.declarer);
-  const won = side === 'NS' ? st.nsTricks : st.ewTricks;
-  const { best, played } = P.ddScores(_ptDds, st, card);
-  if (best == null || played == null) return null;
-  if (best < 0 || played < 0) return null;   // DDS single-suit-ending sentinel (-2): position not evaluable, stay silent
-  const makeTricks = Number(_pt.contract.level) + 6;               // declarer's target
-  const goal = side === declSide ? makeTricks : 14 - makeTricks;   // user side's target
-  const reachableBefore = (won + best) >= goal;    // goal still on with best play
-  const reachableAfter = (won + played) >= goal;   // goal still on after this card
-  // Crossing the make/defeat line is the decisive error, flagged in every format.
-  if (reachableBefore && !reachableAfter) {
-    return side === declSide ? 'That play costs you the contract.' : 'That play sells the contract.';
-  }
-  // Matchpoints only: a trick dropped short of double-dummy still costs an
-  // over/undertrick (the contract's make/defeat status is unchanged here — a
-  // line-crossing drop was already handled above).
-  if (displayFormat(_pt.row) === 'MP') {
-    const drop = best - played;
-    if (drop > 0) {
-      const declPlayed = side === declSide ? (won + played) : 13 - (won + played);
-      const makes = declPlayed >= makeTricks;   // does the contract still make after this card?
-      const qty = drop === 1 ? 'an' : String(drop), s = drop === 1 ? '' : 's';
-      if (side === declSide)
-        return makes ? `That play costs ${qty} overtrick${s}.`
-                     : `That play costs ${qty} extra undertrick${s}.`;
-      return makes ? `That play gives declarer ${qty} overtrick${s}.`
-                   : `That play costs ${qty} undertrick${s}.`;
-    }
-  }
-  return null;
-}
-
-// The double-dummy best final for the user's side, captured once per attempt
-// at their first decision (opponents play DD-optimally, so this is the ceiling).
-function ptCaptureTarget() {
-  const s = _pt.session;
-  if (s.optimalUserFinal != null || !_ptDds) return;
-  const P = _pt.P, st = _pt.state;
-  const side = ptUserSide();
-  const won = side === 'NS' ? st.nsTricks : st.ewTricks;
-  const sug = P.ddSuggest(_ptDds, st);   // st.turn is the user's seat → score is for the user's side
-  s.userSide = side;
-  s.optimalUserFinal = won + (sug ? sug.score : 0);
-}
-
-// Commit the current attempt to storage — on completion (gaveUp=false) with a
-// solved/unsolved verdict, or on give-up (gaveUp=true). Then reset the session
-// so a later replay counts as a fresh attempt.
-function ptCommitAttempt(gaveUp) {
-  const s = _pt.session;
-  if (!s || s.recorded) return;
-  s.recorded = true;
-  const P = _pt.P, st = _pt.state;
-  const side = s.userSide || ptUserSide();
-  const made = side === 'NS' ? st.nsTricks : st.ewTricks;
-  const userIsDecl = side === P.sideOf(_pt.declarer);
-  const contractTarget = _pt.contract ? Number(_pt.contract.level) + 6 : null;
-  const solved = gaveUp ? null : (contractTarget == null ? null : made >= (userIsDecl ? contractTarget : 14 - contractTarget));
-  pushAttempt(_pt.row.problem_id || _pt.row.id, {
-    interactive: true, gaveUp: !!gaveUp, solved,
-    retries: s.retries.slice(),
-    tricksMade: gaveUp ? null : made,
-    optimal: s.optimalUserFinal,
-    grade: null, remarks: '',
-    timestamp: new Date().toISOString(),
-  });
-  _pt.session = ptFreshSession();
-  const btn = document.getElementById('selfGradeBtn'); if (btn) btn.disabled = false;
-}
-
-// Give-up: if the user played/retried but didn't finish, record it as an
-// abandoned attempt. Called when leaving the problem.
-function ptFinalizeIfInteracted() {
-  if (_isPlaySetMode) return; // no attempt tracking for play sets
-  _problemPlayerController?.finalizeIfInteracted?.();
-  if (_pt && _pt.session && _pt.session.interacted && !_pt.session.recorded) ptCommitAttempt(true);
-}
-// Best-effort: catch give-ups on tab close / refresh too.
-window.addEventListener('pagehide', ptFinalizeIfInteracted);
-window.addEventListener('beforeunload', ptFinalizeIfInteracted);
-
-// ---- rendering ----
-
-function ptRenderHand(seat) {
-  const P = _pt.P;
-  const st = _pt.state;
-  const visible = _pt.visible.includes(seat);
-  const isUser = _pt.userSeats.has(seat);
-  const yourTurn = !_pt.locked && !ptStepping() && !_pt.awaitingAdvance && _pt.viewTrick === null && isUser && st.turn === seat && !P.isComplete(st);
-  if (!visible) {
-    // Concealed hand — show a face-down marker only, never the card count.
-    return `<div class="pt-hand pt-hidden"><span class="pt-back">🂠</span></div>`;
-  }
-  const legalSet = new Set(yourTurn ? P.legalMoves(st, seat).map(c => c.suit + c.rank) : []);
-  const rows = SUIT_ORDER.map(su => {
-    const cards = st.remaining[seat][su];
-    const spans = cards.map(r => {
-      const disp = r === 'T' ? '10' : r;
-      const playable = legalSet.has(su + r);
-      const bad = _pt.illegalKey === seat + su + r;
-      return `<span class="pt-card${playable ? ' pt-playable' : ''}${bad ? ' pt-bad' : ''}"`
-        + ` data-seat="${seat}" data-suit="${su}" data-rank="${r}" style="color:${suitHex(su)}">${disp}</span>`;
-    }).join('');
-    return `<div class="pt-row"><span class="pt-suit" style="color:${suitHex(su)}">${SUIT_SYM[su]}</span>${spans || '<span class="pt-void">—</span>'}</div>`;
-  }).join('');
-  return `<div class="pt-hand${yourTurn ? ' pt-active' : ''}">${rows}</div>`;
-}
-
-function ptSeatLabel(seat) {
-  const roles = [];
-  if (seat === _pt.declarer) roles.push('Declarer');
-  else if (seat === _pt.dummy) roles.push('Dummy');
-  if (_pt.userSeats.has(seat)) roles.push('You');
-  return `${SEAT_FULL[seat]}${roles.length ? ' <span class="pt-role">(' + roles.join(', ') + ')</span>' : ''}`;
-}
-
-function ptTrickCenter() {
-  const st = _pt.state;
-  const vt = _pt.viewTrick;
-  const viewingPast = vt !== null;
-  const atBoundary = st.trick.length === 0 && st.tricks.length > 0;
-
-  let cards, winner;
-  if (viewingPast) {
-    const t = st.tricks[vt];
-    cards = t.cards; winner = t.winner;
-  } else {
-    const last = atBoundary ? st.tricks[st.tricks.length - 1] : null;
-    cards = st.trick.length ? st.trick : (last ? last.cards : []);
-    winner = last ? last.winner : null;
-  }
-
-  const bySeat = {}; cards.forEach(c => { bySeat[c.seat] = c; });
-  const showStep = !viewingPast && ptStepping() && !_pt.locked;
-  const slot = seat => {
-    const c = bySeat[seat];
-    if (showStep && !atBoundary && seat === st.turn && !c) {
-      return `<div class="pt-slot pt-slot-${seat.toLowerCase()}"><button class="pt-stepbtn" id="ptStepBtn" title="Play ${SEAT_FULL[seat]}'s card">▶</button></div>`;
-    }
-    const won = winner === seat ? ' pt-won' : '';
-    return `<div class="pt-slot pt-slot-${seat.toLowerCase()}${won}">${c ? `<span style="color:${suitHex(c.suit)}">${SUIT_SYM[c.suit]}${c.rank === 'T' ? '10' : c.rank}</span>` : ''}</div>`;
-  };
-  const centerBtn = !viewingPast && ((showStep && atBoundary) || _pt.awaitingAdvance)
-    ? `<button class="pt-stepbtn pt-stepbtn-center" id="ptStepBtn" title="Continue">▶</button>` : '';
-  const label = viewingPast ? `<div class="pt-trick-hist-label">Trick ${vt + 1}</div>` : '';
-  return `
-    ${label}
-    <div class="pt-trick">
-      ${slot('N')}${slot('W')}${slot('E')}${slot('S')}
-      ${centerBtn}
-    </div>`;
-}
-
-// Running trick tally, shown as a small badge in the top-right corner of the
-// deal grid (previously sat under the trick in the centre).
-function ptCountsHtml() {
-  const st = _pt.state;
-  const nsWon = _pt.P.sideOf(_pt.declarer) === 'NS';
-  const declWon = nsWon ? st.nsTricks : st.ewTricks;
-  const defWon = nsWon ? st.ewTricks : st.nsTricks;
-  return `<div class="pt-counts"><div>Declarer <b>${declWon}</b></div><div>Defenders <b>${defWon}</b></div></div>`;
-}
-
-// The end-of-deal result: a Success/Failure headline (did the user make/set
-// the contract?), the contract made/down line, and Replay.
-// Computed once at completion while the session target is still live (commit
-// resets the session immediately afterwards), then cached on _pt.result.
-function ptComputeResult() {
-  const P = _pt.P, st = _pt.state, s = _pt.session;
-  const nsDecl = P.sideOf(_pt.declarer) === 'NS';
-  const declWon = nsDecl ? st.nsTricks : st.ewTricks;
-  const userSide = (s && s.userSide) || ptUserSide();
-  const userWon = userSide === 'NS' ? st.nsTricks : st.ewTricks;
-  let solved = null;
-  if (_pt.contract) {
-    const target = Number(_pt.contract.level) + 6;
-    const userIsDecl = userSide === P.sideOf(_pt.declarer);
-    solved = userIsDecl ? userWon >= target : userWon >= (14 - target);
-  }
-  let detail;
-  if (_pt.contract) {
-    const target = Number(_pt.contract.level) + 6;
-    const diff = declWon - target;
-    detail = diff >= 0
-      ? `${_pt.row.contract} made${diff ? ' +' + diff : ''} — ${declWon} tricks`
-      : `${_pt.row.contract} down ${-diff}`;
-  } else {
-    detail = `Declarer took ${declWon} trick${declWon === 1 ? '' : 's'}`;
-  }
-  return { solved, detail, claimed: !!_pt.claimed };
-}
-
-function ptResultPanelHtml() {
-  const r = _pt.result || {};
-  const cls = r.solved === true ? 'pt-result-win' : r.solved === false ? 'pt-result-lose' : 'pt-result-neutral';
-  const head = r.solved === true ? 'Success' : r.solved === false ? 'Failure' : 'Deal complete';
-  return `<div class="pt-result ${cls}">
-    <div class="pt-result-head">${head}</div>
-    <div class="pt-result-sub">${escapeHtml(r.detail || '')}${r.claimed ? ' (claimed)' : ''}</div>
-    <button class="pt-replay" id="ptReplayBtn" title="Play the deal again from the start">↻ Replay</button>
-  </div>`;
-}
-
-function ptStatusText() {
-  const P = _pt.P, st = _pt.state;
-  if (P.isComplete(st)) {
-    const lead = _pt.claimed ? 'Claimed' : 'Done';
-    const nsWon = P.sideOf(_pt.declarer) === 'NS';
-    const declWon = nsWon ? st.nsTricks : st.ewTricks;
-    if (_pt.contract) {
-      const target = Number(_pt.contract.level) + 6;
-      const diff = declWon - target;
-      const verdict = diff >= 0 ? `made${diff ? ' +' + diff : ''}` : `down ${-diff}`;
-      return `${lead} — ${SEAT_FULL[_pt.declarer]} took ${declWon} trick${declWon === 1 ? '' : 's'} in ${_pt.row.contract}: <b>${verdict}</b>.`;
-    }
-    return `${lead} — declarer took ${declWon} tricks.`;
-  }
-  if (ptStepping()) return '';   // the ▶ in the play area is self-explanatory
-  if (_pt.viewTrick !== null) return `Trick ${_pt.viewTrick + 1} of ${_pt.state.tricks.length}.`;
-  if (_pt.awaitingAdvance) return 'Trick complete — click ▶ to continue.';
-  if (_pt.locked) return 'Solver playing…';
-  const seat = st.turn;
-  if (_pt.userSeats.has(seat)) {
-    const lead = st.trick.length === 0 ? 'lead' : 'play';
-    return `Your ${lead} — ${SEAT_FULL[seat]}${seat === _pt.dummy ? ' (dummy)' : ''}.`;
-  }
-  return `${SEAT_FULL[seat]} to play…`;
-}
-
-// The inline claim/concede panel (shown while _pt.claiming). Defenders get a
-// single Concede button; declarers get a validated trick-count input.
-function ptClaimPanelHtml() {
-  const remaining = ptTricksRemaining();
-  const err = _pt.claimError ? `<div class="pt-claim-err">${escapeHtml(_pt.claimError)}</div>` : '';
-  if (ptUserSide() !== _pt.P.sideOf(_pt.declarer)) {
-    return `<div class="pt-claimpanel">
-      <div>Concede all ${remaining} remaining trick${remaining === 1 ? '' : 's'} to declarer?</div>
-      <div class="pt-claimrow">
-        <button class="pt-claim-go" id="ptConcedeGo">Concede</button>
-        <button class="pt-claim-cancel" id="ptClaimCancel">Cancel</button>
-      </div>${err}</div>`;
-  }
-  const max = _pt.claimMax == null ? 0 : _pt.claimMax;
-  const min = _pt.claimMin == null ? max : _pt.claimMin;
-  const canGoWrong = min < max;
-  const hintLine = canGoWrong
-    ? `<div>Best play: <b>${max}</b> more tricks. But you could misplay — only <b>${min}</b> guaranteed regardless of your line.</div>`
-    : `<div>All lines guarantee <b>${max}</b> more tricks — you can't go wrong.</div>`;
-  return `<div class="pt-claimpanel">
-    <div class="pt-claimrow">Claim
-      <input id="ptClaimInput" type="number" min="0" max="${remaining}" value="${min}" />
-      of ${remaining} remaining trick${remaining === 1 ? '' : 's'}.</div>
-    ${hintLine}
-    <div class="pt-claimrow">
-      <button class="pt-claim-go" id="ptClaimGo">Claim</button>
-      <button class="pt-claim-cancel" id="ptClaimCancel">Cancel</button>
-    </div>${err}</div>`;
-}
-
-function ptRender() {
-  if (!_pt) return;
-  const root = _pt.root;
-  // Retry arms on whichever comes first: the user has clicked a card
-  // (_pt.userActed), OR the first trick has actually been collected — a trick
-  // completed AND its cards cleared (next trick begun, or the deal is over),
-  // not while the just-completed trick still sits on the table at the
-  // boundary. Sticky, so it never flickers off at later boundaries.
-  const st = _pt.state;
-  const firstTrickCollected = st && st.tricks.length >= 1 && (st.trick.length >= 1 || _pt.P.isComplete(st));
-  if (_pt.userActed || firstTrickCollected) _pt.retryArmed = true;
-  const showRetry = !!_pt.retryArmed;
-  const showClaim = ptCanClaim();
-  const isDeclSide = ptUserSide() === _pt.P.sideOf(_pt.declarer);
-  const vt = _pt.viewTrick;
-  const tricks = st.tricks;
-  const hasPrev = tricks.length > 0 && (vt === null || vt > 0);
-  const hasNext = vt !== null;
-  const canUndo = _pt.history.length > 0 && !ptStepping();
-  // Once the deal is over (all cards played / claimed / conceded) the diagram
-  // gives way to a single result banner + Replay.
-  if (_pt.P.isComplete(st)) {
-    if (!_pt.result) _pt.result = ptComputeResult();
-    root.innerHTML = ptResultPanelHtml();
-    const rb = root.querySelector('#ptReplayBtn');
-    if (rb) rb.addEventListener('click', ptRetryClick);
-    return;
-  }
-  root.innerHTML = `
-    <div class="pt-topbar">
-      <span class="pt-status">${ptStatusText()}</span>
-      <span class="pt-histnav">
-        <button class="pt-histbtn" id="ptPrevTrick" ${hasPrev ? '' : 'disabled'} title="Previous trick">◀</button>
-        <button class="pt-histbtn" id="ptNextTrick" ${hasNext ? '' : 'disabled'} title="Next trick / current">▶</button>
-        <button class="pt-histbtn pt-undobtn" id="ptUndoBtn" ${canUndo ? '' : 'disabled'} title="Undo your last card">⎌</button>
-      </span>
-      <span class="pt-topbtns">
-        ${showClaim ? `<button class="pt-claim" id="ptClaimBtn" title="Result is already determined — click to finish">Claim</button>` : ''}
-        ${showRetry ? '<button class="pt-retry" id="ptRetryBtn" title="Restart the deal from the beginning">↻ Replay</button>' : ''}
-        <button class="pt-alert${_ptAlertOn ? ' pt-alert-on' : ''}" id="ptAlertBtn" title="${_ptAlertOn ? 'Alerts on — click to silence' : 'Alerts off — click to be told when you play a wrong card'}">Alert: ${_ptAlertOn ? 'on' : 'off'}</button>
-      </span>
-    </div>
-    ${_pt.warn ? `<div class="pt-warn">${escapeHtml(_pt.warn)}</div>` : ''}
-    <div class="pt-deal">
-      <div class="pt-pos-n"><div class="pt-seatlabel">${ptSeatLabel('N')}</div>${ptRenderHand('N')}</div>
-      <div class="pt-pos-tr">${ptCountsHtml()}</div>
-      <div class="pt-pos-w"><div class="pt-seatlabel">${ptSeatLabel('W')}</div>${ptRenderHand('W')}</div>
-      <div class="pt-pos-c">${ptTrickCenter()}</div>
-      <div class="pt-pos-e"><div class="pt-seatlabel">${ptSeatLabel('E')}</div>${ptRenderHand('E')}</div>
-      <div class="pt-pos-s"><div class="pt-seatlabel">${ptSeatLabel('S')}</div>${ptRenderHand('S')}</div>
-      ${(_pt.row.contract || _pt.row.lead) ? `<div class="pt-pos-bl"><div class="contract-lead-box">
-        <div><strong>Contract:</strong> ${colorizeSuits(_pt.row.contract || '—')}</div>
-        <div><strong>Lead:</strong> ${colorizeSuits(_pt.row.lead || '—')}</div>
-      </div></div>` : ''}
-    </div>`;
-  root.querySelectorAll('.pt-card').forEach(el => {
-    el.addEventListener('click', () => ptOnCardClick(el.dataset.seat, el.dataset.suit, el.dataset.rank));
-  });
-  const stepBtn = root.querySelector('#ptStepBtn');
-  if (stepBtn) stepBtn.addEventListener('click', ptProceed);
-  const retryBtn = root.querySelector('#ptRetryBtn');
-  if (retryBtn) retryBtn.addEventListener('click', ptRetryClick);
-  const claimBtn = root.querySelector('#ptClaimBtn');
-  if (claimBtn) claimBtn.addEventListener('click', ptClaimOpen);
-  const alertBtn = root.querySelector('#ptAlertBtn');
-  if (alertBtn) alertBtn.addEventListener('click', ptToggleAlert);
-  const prevTrickBtn = root.querySelector('#ptPrevTrick');
-  if (prevTrickBtn) prevTrickBtn.addEventListener('click', ptPrevTrick);
-  const nextTrickBtn = root.querySelector('#ptNextTrick');
-  if (nextTrickBtn) nextTrickBtn.addEventListener('click', ptNextTrick);
-  const undoBtn = root.querySelector('#ptUndoBtn');
-  if (undoBtn) undoBtn.addEventListener('click', ptUndo);
-}
-
-let _ptStyleInjected = false;
-function ensurePlayTableStyle() {
-  if (_ptStyleInjected) return;
-  _ptStyleInjected = true;
-  const s = document.createElement('style');
-  s.textContent = `
-    .pt-deal { display:inline-grid; grid-template-columns:auto auto auto; grid-template-rows:auto auto auto;
-      column-gap:14px; row-gap:10px; align-items:center; justify-items:center;
-      font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; }
-    .pt-pos-n{grid-column:2;grid-row:1;} .pt-pos-w{grid-column:1;grid-row:2;}
-    .pt-pos-c{grid-column:2;grid-row:2;} .pt-pos-e{grid-column:3;grid-row:2;} .pt-pos-s{grid-column:2;grid-row:3;}
-    .pt-pos-tr{grid-column:3;grid-row:1;align-self:start;justify-self:end;}
-    .pt-pos-bl{grid-column:1;grid-row:3;align-self:start;justify-self:end;}
-    .pt-seatlabel{font-family:ui-sans-serif,system-ui;font-size:0.72rem;color:#374151;text-align:center;margin-bottom:2px;}
-    .pt-role{color:#9ca3af;}
-    .pt-hand{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;min-width:96px;}
-    .pt-hand.pt-active{border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,0.15);}
-    .pt-row{white-space:nowrap;line-height:1.5;font-size:0.95rem;}
-    .pt-suit{display:inline-block;width:1.1em;}
-    .pt-void{color:#d1d5db;}
-    .pt-card{display:inline-block;padding:0 2px;border-radius:3px;}
-    .pt-card.pt-playable{cursor:pointer;background:#eff6ff;outline:1px solid #bfdbfe;}
-    .pt-card.pt-playable:hover{background:#dbeafe;}
-    .pt-card.pt-bad{background:#fee2e2;outline:1px solid #fca5a5;}
-    .pt-warn{margin:6px 0;padding:6px 10px;border-radius:6px;background:#fef2f2;border:1px solid #fca5a5;
-      color:#b91c1c;font-family:ui-sans-serif,system-ui;font-size:0.82rem;font-weight:600;}
-    .pt-hidden{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-      min-width:96px;min-height:96px;border:1px dashed #d1d5db;border-radius:8px;color:#9ca3af;background:#f9fafb;}
-    .pt-back{font-size:2rem;line-height:1;color:#9ca3af;}
-    .pt-trick{position:relative;width:120px;height:120px;}
-    .pt-slot{position:absolute;font-size:1.1rem;font-weight:600;}
-    .pt-slot-n{top:0;left:50%;transform:translateX(-50%);}
-    .pt-slot-s{bottom:0;left:50%;transform:translateX(-50%);}
-    .pt-slot-w{left:0;top:50%;transform:translateY(-50%);}
-    .pt-slot-e{right:0;top:50%;transform:translateY(-50%);}
-    .pt-slot.pt-won{background:#fef3c7;border-radius:4px;padding:0 3px;}
-    .pt-stepbtn{border:1px solid #2563eb;background:#2563eb;color:#fff;border-radius:999px;
-      width:30px;height:30px;font-size:0.95rem;line-height:1;cursor:pointer;padding:0;
-      display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(37,99,235,0.4);}
-    .pt-stepbtn:hover{background:#1d4ed8;}
-    .pt-stepbtn-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
-    .pt-trick-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:0.8rem;color:#9ca3af;
-      font-family:ui-sans-serif,system-ui;}
-    .pt-counts{text-align:right;font-family:ui-sans-serif,system-ui;font-size:0.72rem;color:#6b7280;line-height:1.4;
-      border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;background:#f9fafb;white-space:nowrap;}
-    .pt-counts b{color:#111827;}
-    .pt-result{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:440px;
-      box-sizing:border-box;border-radius:10px;padding:22px 18px;font-family:ui-sans-serif,system-ui;text-align:center;}
-    .pt-result-win{border:1px solid #a7f3d0;background:#f0fdf4;}
-    .pt-result-lose{border:1px solid #fecaca;background:#fef2f2;}
-    .pt-result-neutral{border:1px solid #e5e7eb;background:#f9fafb;}
-    .pt-result-head{font-size:1.35rem;font-weight:700;}
-    .pt-result-win .pt-result-head{color:#047857;}
-    .pt-result-lose .pt-result-head{color:#b91c1c;}
-    .pt-result-neutral .pt-result-head{color:#374151;}
-    .pt-result-sub{font-size:0.92rem;color:#374151;}
-    .pt-replay{margin-top:4px;background:#fff;border:1px solid #2563eb;color:#2563eb;border-radius:6px;padding:6px 18px;
-      font-size:0.85rem;font-weight:600;cursor:pointer;font-family:ui-sans-serif,system-ui;}
-    .pt-replay:hover{background:#eff6ff;}
-    .pt-mount{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 12px;}
-    .pt-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:440px;min-height:30px;}
-    .pt-status{font-size:0.86rem;color:#1d4ed8;font-family:ui-sans-serif,system-ui;}
-    .pt-retry{background:#fff;border:1px solid #2563eb;color:#2563eb;border-radius:6px;padding:4px 14px;flex-shrink:0;
-      font-size:0.82rem;font-weight:600;cursor:pointer;font-family:ui-sans-serif,system-ui;}
-    .pt-retry:hover{background:#eff6ff;}
-    .pt-claim{background:#fff;border:1px solid #059669;color:#059669;border-radius:6px;padding:4px 14px;flex-shrink:0;
-      font-size:0.82rem;font-weight:600;cursor:pointer;font-family:ui-sans-serif,system-ui;}
-    .pt-claim:hover{background:#ecfdf5;}
-    .pt-alert{background:#fff;border:1px solid #9ca3af;color:#6b7280;border-radius:6px;padding:4px 14px;flex-shrink:0;
-      font-size:0.82rem;font-weight:600;cursor:pointer;font-family:ui-sans-serif,system-ui;}
-    .pt-alert:hover{background:#f3f4f6;}
-    .pt-alert.pt-alert-on{border-color:#d97706;color:#d97706;}
-    .pt-alert.pt-alert-on:hover{background:#fffbeb;}
-    .pt-topbtns{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-    .pt-histnav{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-    .pt-histbtn{font-size:0.82rem;font-weight:600;padding:3px 8px;border:1px solid #d1d5db;border-radius:5px;
-      background:#f9fafb;cursor:pointer;font-family:ui-sans-serif,system-ui;line-height:1.4;}
-    .pt-histbtn:hover:not(:disabled){background:#f3f4f6;}
-    .pt-histbtn:disabled{opacity:0.3;cursor:default;}
-    .pt-undobtn{color:#7c3aed;border-color:#ddd6fe;}
-    .pt-undobtn:not(:disabled):hover{background:#f5f3ff;}
-    .pt-trick-hist-label{font-size:0.7rem;font-family:ui-sans-serif,system-ui;color:#9ca3af;
-      text-align:center;margin-bottom:2px;}
-    .pt-claimpanel{width:100%;max-width:440px;box-sizing:border-box;border:1px solid #a7f3d0;background:#f0fdf4;
-      border-radius:8px;padding:10px 12px;font-family:ui-sans-serif,system-ui;font-size:0.84rem;color:#065f46;
-      display:flex;flex-direction:column;gap:8px;}
-    .pt-claimpanel .pt-claimrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-    .pt-claimpanel input{width:52px;padding:3px 6px;border:1px solid #059669;border-radius:5px;font-size:0.9rem;font-family:inherit;}
-    .pt-claimpanel button{border-radius:6px;padding:4px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;}
-    .pt-claim-go{background:#059669;border:1px solid #059669;color:#fff;}
-    .pt-claim-go:hover{background:#047857;}
-    .pt-claim-cancel{background:#fff;border:1px solid #9ca3af;color:#4b5563;}
-    .pt-claim-cancel:hover{background:#f3f4f6;}
-    .pt-claim-err{color:#b91c1c;font-size:0.8rem;}
-    .pt-loading{color:#6b7280;font-size:0.9rem;padding:24px;text-align:center;}
-  `;
-  document.head.appendChild(s);
-}
-
 
 function renderSolutionInner(p) {
   p = withLinDeal(p);
@@ -2943,7 +1970,6 @@ function exitViewMode() {
 
 function showViewProblem() {
   if (!viewPool.length) return;
-  ptFinalizeIfInteracted();   // record a give-up for the problem we're leaving
   viewCursor = Math.max(0, Math.min(viewPool.length - 1, viewCursor));
   const num = viewCursor + 1;
   const p = viewPool[viewCursor];
@@ -3067,9 +2093,6 @@ let _viewingSharedSet = null; // { showSolution } when viewing a shared set
 const _sharedSetsCache = [];
 
 // Play set mode: determined from URL params at page load
-const _isPlaySetMode = !!new URLSearchParams(location.search).get('playset');
-const _psId = new URLSearchParams(location.search).get('psid') || null;
-const _isEmbedMode = new URLSearchParams(location.search).get('embed') === '1';
 
 function loadSets() {
   return _setsCache;
@@ -3135,13 +2158,6 @@ window.bpReplaceSharedSetIds = function (ids) {
     show(cursor);
   }
 };
-
-// A problem's Discussion shows only when its set is actually shared — either
-// it was shared with me (_viewingSharedSet) or I've shared it with someone.
-function problemSetIsShared() {
-  if (_viewingSharedSet) return true;
-  return !!(currentSavedId && _sharedSetIds.has(currentSavedId));
-}
 
 /* ---------- Share dialog ---------- */
 let _shareSetId = null;
@@ -3269,11 +2285,7 @@ function handleOpenNotes(problemId, displayNum) {
   if (_notesOpen) { closeNotesPanel(); return; }
 
   let resourceType, resourceId, name;
-  if (_isPlaySetMode && _psId) {
-    resourceType = 'bsd_play_set';
-    resourceId = `${_psId}:${problemId}`;
-    name = `Board ${displayNum} Notes`;
-  } else if (currentSavedId) {
+  if (currentSavedId) {
     resourceType = 'bp_problem_set';
     resourceId = `${currentSavedId}:${problemId}`;
     name = `Problem ${displayNum} Notes`;
@@ -3302,7 +2314,7 @@ function openSharedSet(id) {
   }
   showOpenModeModal(id, s.name, fullSet, true, { showSolution: s.showSolution });
 }
-/* ---------- Per-problem overrides (level, tags) + self-grade history ---------- */
+/* ---------- Per-problem overrides (level, tags) + attempt history ---------- */
 const STORAGE_OVERRIDES = 'bridgeProblemOverrides.v1';
 const STORAGE_GRADES    = 'bridgeProblemGrades.v1';
 
@@ -3329,11 +2341,8 @@ function saveOverride(pid, patch) {
 function effectiveLevel(p) {
   return (p.level != null) ? p.level : null;
 }
-function effectiveTags(p) {
-  return p.tags || [];
-}
 
-// Review attempts now live in the DB (bp_problem_attempts), keyed by problem
+// Attempts live in the DB (bp_problem_attempts), keyed by problem
 // so they follow a problem across sets, books and devices. This in-memory map
 // (problem_id -> attempt[]) is hydrated from the DB on load and is the source
 // of truth for the synchronous render code; each mutation upserts its problem.
@@ -3352,12 +2361,6 @@ function pushAttempt(pid, row) {
   list.push({ setId: ctx.id || null, setName: ctx.name || null, ...row });
   persistAttempts(pid);
   return list.length - 1;
-}
-function updateAttempt(pid, idx, patch) {
-  if (_attemptsCache[pid] && _attemptsCache[pid][idx]) {
-    Object.assign(_attemptsCache[pid][idx], patch);
-    persistAttempts(pid);
-  }
 }
 
 // Pull this user's attempts from the DB into the cache, then one-time migrate
@@ -3389,34 +2392,8 @@ async function hydrateAttempts() {
     }
   } catch (e) { /* migration best-effort */ }
   _attemptsCache = cache;
-  // Re-render the current problem so attempt counts/Review button reflect the DB.
-  if (!document.getElementById('viewBridge').classList.contains('hidden') && problemSet.length) {
-    show(cursor);
-  }
 }
 window.bpHydrateAttempts = hydrateAttempts;
-
-// Attempts table: #, date, result, retries, retried-after, plus editable
-// Grade (1–10) and Remarks. Non-interactive rows show — for play columns.
-function renderAttemptSummary(pid) {
-  const grades = loadGrades()[pid] || [];
-  if (!grades.length) return '<div class="grade-empty">No attempts recorded yet.</div>';
-  const rows = grades.map((g, i) => {
-    const date = new Date(g.timestamp).toLocaleDateString();
-    const interactive = g.interactive !== false;
-    const result = !interactive ? '—' : g.gaveUp ? '⏳ Gave up' : g.solved === true ? '✅ Solved' : g.solved === false ? '❌ Unsolved' : '—';
-    const rc = interactive ? (g.retries || []).length : '—';
-    const rlist = interactive && (g.retries || []).length ? g.retries.map(r => r.tricks).join(', ') : '—';
-    return `<tr>
-      <td>${i + 1}</td><td>${date}</td><td>${result}</td><td>${rc}</td><td>${rlist}</td>
-      <td><input class="grade-input" type="number" min="1" max="10" data-idx="${i}" value="${g.grade == null ? '' : g.grade}"></td>
-      <td class="remarks-cell"><textarea class="remarks-input" rows="2" data-idx="${i}" placeholder="Notes to self — what you missed, the key learning…">${escapeHtml(g.remarks || '')}</textarea></td>
-    </tr>`;
-  }).join('');
-  return `<table class="grade-table"><thead><tr>
-    <th>#</th><th>Date</th><th>Result</th><th>Retries</th><th>After<br>(tricks)</th><th>Grade</th><th class="remarks-cell">Remarks</th>
-    </tr></thead><tbody>${rows}</tbody></table>`;
-}
 
 /* Modal-based name prompt. Returns a Promise<string|null>. */
 let _nameModalResolve = null;
@@ -3835,7 +2812,6 @@ function showOpenModeModal(setId, setName, fullSet, isShared, sharedOpts) {
 
 /* ---------- Page switching ---------- */
 function switchPage(page) {
-  ptFinalizeIfInteracted();   // leaving the problem view — record any give-up
   viewMode = false;
   viewPool = [];
   viewCursor = 0;
@@ -3862,9 +2838,9 @@ function switchPage(page) {
   }
 
   // Filters card is hidden when viewing a saved set (Open from My Problem Sets),
-  // reading a library book, or in play set mode.
+  // or reading a library book.
   const filtersCard = document.getElementById('filtersCard');
-  if (page === 'create' && (currentSavedId || readingBook || _isPlaySetMode) && !addMode) {
+  if (page === 'create' && (currentSavedId || readingBook) && !addMode) {
     filtersCard.classList.add('hidden');
   } else {
     filtersCard.classList.remove('hidden');
@@ -3924,9 +2900,7 @@ function loadBookProgress(bookTitle) {
 
 function show(i) {
   if (!problemSet.length) return;
-  ptFinalizeIfInteracted();   // record a give-up for the problem we're leaving
   closeNotesPanel();
-  _ptDdPlayMode = false;
   cursor = Math.max(0, Math.min(problemSet.length - 1, i));
   saveSetCursor();
   saveBookProgress();
@@ -3954,14 +2928,6 @@ function show(i) {
   if (notesBtn) notesBtn.addEventListener('click', () => handleOpenNotes(p.problem_id, num));
   const editBtn = document.getElementById('editBtn');
   if (editBtn) editBtn.addEventListener('click', () => window.bpEditor?.openEditor(p, { onSave: onProblemSaved }));
-  const ptPlayModeBtn = document.getElementById('ptPlayModeBtn');
-  if (ptPlayModeBtn) ptPlayModeBtn.addEventListener('click', () => {
-    _ptDdPlayMode = !_ptDdPlayMode;
-    ptPlayModeBtn.textContent = _ptDdPlayMode ? '◀ Problem' : '▶ Play';
-    ptPlayModeBtn.classList.toggle('btn-play-active', _ptDdPlayMode);
-    if (_ptDdPlayMode) mountDdPlayTable(p);
-    else mountPlayTable(p);
-  });
   const resetBtn = document.getElementById('resetBtn');
   if (resetBtn && p.original_snapshot) {
     resetBtn.classList.remove('hidden');
@@ -4371,7 +3337,7 @@ async function refreshTagsFilterVisibility() {
   group.classList.remove('hidden');
 }
 
-/* ---------- Content modal (solution / source / stats) ---------- */
+/* ---------- Content modal (solution / source) ---------- */
 function openContentModal(title, html) {
   document.getElementById('contentModalTitle').textContent = title;
   document.getElementById('contentModalBody').innerHTML = html;
@@ -4382,72 +3348,7 @@ function closeContentModal() {
   document.getElementById('contentModalBody').innerHTML = '';
 }
 
-/* ---------- Review Attempts modal ---------- */
-let _gradingPid = null;
-// Interactive attempts are recorded automatically (completion or give-up).
-// For non-playable problems there's no play, so opening this appends a new
-// manual attempt row (# + date prefilled) for the user to grade/annotate.
-// Grade and Remarks are editable on every row.
-function openGradeModal(p, num, opts) {
-  const pid = p.problem_id;
-  _gradingPid = pid;
-  if (opts && opts.addRow) {
-    pushAttempt(pid, { interactive: false, solved: null, gaveUp: false, retries: [],
-      tricksMade: null, optimal: null, grade: null, remarks: '', timestamp: new Date().toISOString() });
-  }
-  document.getElementById('gradeModalTitle').textContent = `Review Attempts — Problem ${num}`;
-  const body = document.getElementById('gradeAttempts');
-  body.innerHTML = renderAttemptSummary(pid);
-  body.querySelectorAll('.grade-input').forEach(inp => inp.addEventListener('change', () => {
-    let v = parseInt(inp.value, 10);
-    v = isNaN(v) ? null : Math.max(1, Math.min(10, v));
-    inp.value = v == null ? '' : v;
-    updateAttempt(pid, +inp.dataset.idx, { grade: v });
-  }));
-  body.querySelectorAll('.remarks-input').forEach(inp => inp.addEventListener('input', () => {
-    updateAttempt(pid, +inp.dataset.idx, { remarks: inp.value });
-  }));
-  document.getElementById('gradeModal').classList.remove('hidden');
-}
-function closeGradeModal() {
-  document.getElementById('gradeModal').classList.add('hidden');
-  _gradingPid = null;
-}
-
 /* Tags/Level modal helpers removed — the editor's "Source / Tags / Level" tab covers both. */
-
-/* ---------- Stats modal ---------- */
-function openStatsModal() {
-  const grades = loadGrades();
-  const byId = Object.fromEntries(problems.map(p => [p.problem_id, p]));
-  const entries = Object.entries(grades).filter(([, list]) => list && list.length);
-  if (!entries.length) {
-    openContentModal('Self Grade Stats', '<div class="stats-empty">No grades recorded yet. Open a problem and click <strong>Self Grade</strong>.</div>');
-    return;
-  }
-  // Most-recently-graded first
-  entries.sort((a, b) => {
-    const at = a[1][a[1].length - 1].timestamp;
-    const bt = b[1][b[1].length - 1].timestamp;
-    return bt.localeCompare(at);
-  });
-  const items = entries.map(([pid, list]) => {
-    const p = byId[pid];
-    const heading = p
-      ? `${escapeHtml(p.book_title || 'Unknown book')} — ${escapeHtml(p.problem_number || pid)}`
-      : escapeHtml(pid);
-    const attempts = list.map((g, i) => {
-      const date = (() => { try { return new Date(g.timestamp).toLocaleDateString(); } catch { return ''; }})();
-      const setLabel = g.setName ? escapeHtml(g.setName) : '—';
-      return `<div class="stats-attempt">
-        <span>Attempt ${i + 1}: <strong>${g.score}/10</strong></span>
-        <span class="stats-meta">${setLabel} · ${date}</span>
-      </div>`;
-    }).join('');
-    return `<div class="stats-item"><p class="stats-problem-name">${heading}</p>${attempts}</div>`;
-  }).join('');
-  openContentModal('Self Grade Stats', `<div class="stats-list">${items}</div>`);
-}
 
 document.getElementById('prev').addEventListener('click', () => {
   if (viewMode) { viewCursor--; showViewProblem(); }
@@ -4522,7 +3423,6 @@ document.addEventListener('keydown', (e) => {
     if (!document.getElementById('viewLibrary').classList.contains('hidden'))    { closeLibraryModal();  return; }
     if (!document.getElementById('shareSetModal').classList.contains('hidden')) { closeShareSetModal(); return; }
     if (!document.getElementById('contentModal').classList.contains('hidden'))  { closeContentModal();  return; }
-    if (!document.getElementById('gradeModal').classList.contains('hidden'))    { closeGradeModal();    return; }
   }
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) return;
   if (e.key === 'ArrowLeft') { if (viewMode) { viewCursor--; showViewProblem(); } else show(cursor - 1); }
@@ -4533,13 +3433,6 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('contentModalClose').addEventListener('click', closeContentModal);
 document.getElementById('contentModal').addEventListener('click', (e) => {
   if (e.target.id === 'contentModal') closeContentModal();  // overlay click
-});
-
-/* ---------- Attempts summary modal wiring (read-only) ---------- */
-document.getElementById('gradeModalCancel').addEventListener('click', closeGradeModal);
-document.getElementById('gradeModalClose').addEventListener('click', closeGradeModal);
-document.getElementById('gradeModal').addEventListener('click', (e) => {
-  if (e.target.id === 'gradeModal') closeGradeModal();
 });
 
 /* ---------- Name modal wiring ---------- */
@@ -4558,28 +3451,6 @@ document.getElementById('nameModalInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') { e.preventDefault(); nameModalSubmit(); }
   if (e.key === 'Escape') { e.preventDefault(); closeNameModal(null); }
 });
-
-// Expose play set opener to the module script (function declarations are on window)
-function _doOpenPlaySet(boards) {
-  _doOpenSet(null, (boards[0]?._setName || 'Play Set'), boards, 0, false, null);
-}
-
-// In play set mode or embed mode, skip the normal sets UI and show a loading indicator
-if (_isPlaySetMode || _isEmbedMode) {
-  document.getElementById('viewSets').classList.add('hidden');
-  document.getElementById('viewBridge').classList.remove('hidden');
-  document.getElementById('filtersCard').classList.add('hidden');
-  if (_isEmbedMode) {
-    // Embed mode: hide the entire topbar (iframe shows no chrome)
-    document.querySelector('.topbar')?.classList.add('hidden');
-    document.getElementById('root').innerHTML = '<div class="empty">Loading…</div>';
-  } else {
-    document.getElementById('root').innerHTML = '<div class="empty">Loading play set…</div>';
-    // Override Dashboard button to close the tab (it was opened from bsd-games)
-    const dashBtn = document.querySelector('.back-btn[onclick]');
-    if (dashBtn) { dashBtn.removeAttribute('onclick'); dashBtn.addEventListener('click', () => window.close()); }
-  }
-}
 
 const SUPABASE_URL = 'https://fwvbjmntuersvhvqxuxq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dmJqbW50dWVyc3ZodnF4dXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMTA5MjQsImV4cCI6MjA3OTc4NjkyNH0.GuNM7nSYMcPx6mWTywCVpOMF_tYlx1Y6iHYUk3LX4Hc';
@@ -4610,7 +3481,6 @@ async function loadProblemsFromDb() {
 
 loadProblemsFromDb()
   .then(data => {
-    if (_isPlaySetMode) return; // module script handles display in play set mode
     // Existing viewer code references p.problem_id everywhere; the DB column is `id`.
     for (let i = 0; i < data.length; i++) {
       data[i] = withLinDeal(data[i]);
@@ -4675,7 +3545,6 @@ loadProblemsFromDb()
     switchPage('sets');
   })
   .catch(err => {
-    if (_isPlaySetMode) return;
     document.getElementById('root').innerHTML = `<div class="empty">Failed to load problems from database. ${escapeHtml(err.message)}</div>`;
   });
 </script>
@@ -4941,80 +3810,6 @@ async function init() {
   // Fire-and-don't-block — the page can render with an empty cache while
   // hydrate completes; once it does, the sets page re-renders.
   hydrateSetsCache();
-
-  // Embed mode: single board passed via URL params — auto-start immediately
-  if (_isEmbedMode) {
-    const params = new URLSearchParams(location.search);
-    const lin   = params.get('lin')  || '';
-    const dir   = params.get('dir')  || 'S';
-    const cns   = params.get('cns')  || 'UDCA';
-    const cew   = params.get('cew')  || 'UDCA';
-    const boardNum = params.get('bn') || '';
-    const boardId  = params.get('bid') || '';
-
-    saveCardingPrefs({ NS: cns, EW: cew });
-
-    const board = {
-      problem_id: `embed-${boardId || boardNum}`,
-      _boardId: boardId || null,
-      board_number: boardNum,
-      lin,
-      problem_visible_hands: [dir],
-      is_play_set: true,
-    };
-
-    if (globalThis.bpLin?.linIsPlayable(lin)) {
-      window._doOpenPlaySet([board]);
-    } else {
-      document.getElementById('root').innerHTML =
-        '<div class="empty" style="padding:2rem">Board not available for play (no complete auction).</div>';
-    }
-    return;
-  }
-
-  // Play set mode: load boards from bsd-games analysis and show direction picker
-  const psAnalysisId = new URLSearchParams(location.search).get('playset');
-  if (psAnalysisId) {
-    if (!signedInEmail) {
-      document.getElementById('root').innerHTML = '<div class="empty">Please sign in to open a play set.</div>';
-      return;
-    }
-    import('./playset.js')
-      .then(async ({ loadPlaySetBoards }) => {
-        const boards = await loadPlaySetBoards(psAnalysisId);
-        if (!boards.length) throw new Error('No boards found in this play set');
-        const modal = document.getElementById('playSetModal');
-        document.getElementById('playSetTitle').textContent = boards[0]?._setName || 'Deal Set';
-        syncPlaySettings();
-        modal.classList.remove('hidden');
-        let _selectedDir = null;
-        modal.querySelectorAll('[data-psdir]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            _selectedDir = btn.dataset.psdir;
-            modal.querySelectorAll('[data-psdir]').forEach(b => {
-              b.style.background = ''; b.style.color = '';
-            });
-            btn.style.background = 'var(--blue, #2563eb)';
-            btn.style.color = '#fff';
-            document.getElementById('playSetStart').disabled = false;
-          });
-        });
-        document.getElementById('playSetStart').addEventListener('click', () => {
-          if (!_selectedDir) return;
-          modal.classList.add('hidden');
-          const directedBoards = boards.map(b => ({ ...b, problem_visible_hands: [_selectedDir] }));
-          window._doOpenPlaySet(directedBoards);
-        });
-        document.getElementById('playSetClose').addEventListener('click', () => {
-          modal.classList.add('hidden');
-        });
-      })
-      .catch(err => {
-        document.getElementById('root').innerHTML =
-          `<div class="empty">Could not load play set: ${String(err && err.message || err).replace(/</g, '&lt;')}</div>`;
-      });
-    return; // skip overrides migration in play set mode
-  }
 
   if (!editAllowed) return;
 

@@ -1,46 +1,14 @@
-// Bridge Problems adapter for the shared IPS play runtime.
+// Bridge Problems adapter for the standalone table components in bsd-app's
+// /bridge-lib: BridgePlayer (the user plays, the computer plays the other
+// seats) and DealViewer (display only).
 //
 // Bridge Problems owns problem navigation, source/solution display and attempt
-// persistence. IPS owns the hand layout, bridge engine, DDS, controls and play
-// lifecycle. Keeping this adapter small prevents the two modules from growing
-// separate play implementations again.
-
-let runtimePromise;
-
-function loadRuntime() {
-  if (!runtimePromise) {
-    runtimePromise = Promise.all([
-      import('../bridge-lib/ips/ips-module.js'),
-      import('../bridge-lib/ips/ips-bidding.js'),
-    ]).then(([{ createIpsPlayerRuntime }, bidding]) => ({ runtime: createIpsPlayerRuntime(), bidding }));
-  }
-  return runtimePromise;
-}
+// persistence; the components own the table, the card play and the solver.
 
 function normalizeLin(lin) {
   return String(lin || '')
     .replace(/mb\|ap\|/gi, 'mb|p|mb|p|mb|p|')
     .replace(/mb\|P\|/g, 'mb|p|');
-}
-
-function normalizeCard(card) {
-  if (!card) return null;
-  if (typeof card === 'object' && card.suit && card.rank) card = `${card.suit}${card.rank}`;
-  const value = String(card).trim().toUpperCase().replace('10', 'T')
-    .replace('♠', 'S').replace('♥', 'H').replace('♦', 'D').replace('♣', 'C')
-    .replace(/\s+/g, '');
-  return /^[SHDC][2-9TJQKA]$/.test(value) ? value : null;
-}
-
-function contractFromCalls(calls) {
-  let bid = null;
-  let doubled = '';
-  for (const call of calls || []) {
-    if (/^[1-7]/.test(call)) { bid = call; doubled = ''; }
-    else if (call === 'X') doubled = 'X';
-    else if (call === 'XX') doubled = 'XX';
-  }
-  return bid ? `${bid}${doubled}` : undefined;
 }
 
 function contractFromProblem(str) {
@@ -49,96 +17,90 @@ function contractFromProblem(str) {
   return c.level + c.denom + (c.x === 'xx' ? 'XX' : c.x === 'x' ? 'X' : '');
 }
 
-function rowFromProblem(problem, linData) {
-  const lin = normalizeLin(problem.lin);
-  const parsed = globalThis.bpPlay?.parseLin?.(lin);
-  let declarer = String(parsed?.declarer || '').toUpperCase();
+// ── BridgePlayer ────────────────────────────────────────────────────────────
+// Maps a problem onto BridgePlayer's generic seat options. Returns null for
+// problems that aren't played out (the caller shows mountProblemDisplay).
+//   Declarer Play: you see and play declarer + dummy; the computer plays both defenders.
+//   Defense / Defensive Play: you see your hand + dummy and play your hand; the
+//                  computer plays dummy, declarer and your partner.
+function bridgePlayerSeats(problem, lin) {
+  let type = String(problem.subcategory || '').trim().toLowerCase();
+  if (type === 'defensive play') type = 'defense';
+  if (type !== 'declarer play' && type !== 'defense') return null;
+  const P = globalThis.bpPlay;
+  let declarer = String(P?.parseLin?.(lin)?.declarer || '').toUpperCase();
   if (!declarer) {
     const m = (problem.contract || '').match(/\s([NESW])\s*$/i);
     if (m) declarer = m[1].toUpperCase();
   }
-  const dummy = declarer ? globalThis.bpPlay?.partner?.(declarer) : null;
-  const sourceVisible = (problem.problem_visible_hands || ['S']).map(seat => String(seat).toUpperCase());
-  const userSeat = sourceVisible.find(seat => seat !== dummy) || declarer || 'S';
-  const declarerSide = declarer && globalThis.bpPlay?.sideOf?.(declarer);
-  const userIsDeclarerSide = declarerSide && globalThis.bpPlay?.sideOf?.(userSeat) === declarerSide;
-  const playFromLin = linData.play.map(normalizeCard).filter(Boolean);
-  // Fall back to the DB lead column so the lead is always in the script even
-  // when the LIN has no pc| tokens. Bridge-problems always pre-plays the
-  // opening lead before handing control to the user (regardless of seat).
-  const leadCard = playFromLin[0] || normalizeCard(problem.lead) || undefined;
-  return {
-    lin,
-    play: playFromLin.length ? playFromLin : (leadCard ? [leadCard] : []),
-    problem_visible_hands: [userIsDeclarerSide ? declarer : userSeat],
-    problem_user_hands: userIsDeclarerSide && dummy ? [declarer, dummy] : [userSeat],
-    contract: contractFromCalls(linData.bids?.map(entry => entry.bid)) || contractFromProblem(problem.contract),
-    declarer: declarer || undefined,
-    lead: leadCard || undefined,
-    vul: linData.vul,
-    alwaysPrePlayScript: true,
-  };
-}
-
-export async function mountProblemPlayer(container, problem, options = {}) {
-  if (!container) throw new Error('ProblemPlayer requires a container');
-  if (!problem.lin) throw new Error('Problem has no canonical LIN');
-  const { runtime, bidding } = await loadRuntime();
-  const lin = normalizeLin(problem.lin);
-  const linData = bidding.parseLinMetadata(lin);
-  const row = rowFromProblem({ ...problem, lin }, linData);
-
-  return runtime.mountIpsPlayer(container, {
-    row,
-    mode: 'play',
-    ddsPath: '/bridge-lib/ips/dds/dds-api.js',
-    format: options.format || problem.format || null,
-    cardingNS: options.cardingNS || 'UDCA',
-    cardingEW: options.cardingEW || 'UDCA',
-    onComplete: options.onComplete,
-    biddingHtml: bidding.buildAuctionHtml(linData),
-    bottomLeftEl: options.bottomLeftEl || null,
-  });
-}
-
-export async function mountDdPlayer(container, problem, options = {}) {
-  if (!container) throw new Error('mountDdPlayer requires a container');
-  if (!problem.lin) throw new Error('Problem has no canonical LIN');
-  const { runtime, bidding } = await loadRuntime();
-  const lin = normalizeLin(problem.lin);
-  const linData = bidding.parseLinMetadata(lin);
-
-  const parsed = globalThis.bpPlay?.parseLin?.(lin);
-  let declarer = String(parsed?.declarer || '').toUpperCase();
-  if (!declarer) {
-    const m = (problem.contract || '').match(/\s([NESW])\s*$/i);
-    if (m) declarer = m[1].toUpperCase();
+  if (!declarer) return null;
+  const dummy = P.partner(declarer);
+  if (type === 'declarer play') {
+    return { declarer, visibleSeats: [declarer, dummy], userSeats: [declarer, dummy] };
   }
+  const visible = (problem.problem_visible_hands || []).map(seat => String(seat).toUpperCase());
+  const mySeat = visible.find(seat => seat !== dummy && seat !== declarer);
+  if (!mySeat) return null;
+  return { declarer, visibleSeats: [mySeat, dummy], userSeats: [mySeat] };
+}
 
-  const contract = contractFromProblem(problem.contract) || contractFromCalls(linData.bids?.map(e => e.bid));
+// Returns the BridgePlayer controller ({ unmount }), or null when the problem
+// isn't an interactive-play problem (caller shows mountProblemDisplay instead).
+export async function mountBridgePlayerForProblem(container, problem, options = {}) {
+  if (!container) throw new Error('BridgePlayer requires a container');
+  if (!problem.lin) return null;
+  const lin = normalizeLin(problem.lin);
+  const seats = bridgePlayerSeats(problem, lin);
+  if (!seats) return null;
+  const { mountBridgePlayer } = await import('/bridge-lib/bridge-player/BridgePlayer.js');
+  const userSide = globalThis.bpPlay.sideOf(seats.userSeats[0]);
+  const userIsDeclarer = userSide === globalThis.bpPlay.sideOf(seats.declarer);
 
-  const row = {
+  return mountBridgePlayer(container, {
     lin,
-    play: [],
-    problem_visible_hands: ['N', 'E', 'S', 'W'],
-    problem_user_hands: ['N', 'E', 'S', 'W'],
-    contract,
-    declarer: declarer || undefined,
-    vul: linData.vul,
-    alwaysPrePlayScript: false,
-  };
-
-  return runtime.mountIpsPlayer(container, {
-    row,
-    mode: 'play',
-    ddsPath: '/bridge-lib/ips/dds/dds-api.js',
-    format: options.format || problem.format || null,
+    userSeats: seats.userSeats,
+    visibleSeats: seats.visibleSeats,
+    // Many problem LINs have no auction; the contract column then supplies
+    // the strain (trumps!) and level.
+    contract: contractFromProblem(problem.contract) || null,
+    declarer: seats.declarer,
+    showAuction: true,
+    // Show the lead, then step through the book's play to the decision point.
+    preplayLead: true,
+    autoplay: true,
     cardingNS: options.cardingNS || 'UDCA',
     cardingEW: options.cardingEW || 'UDCA',
-    ddOn: true,
-    hideDdButton: true,
-    hideAlertButton: true,
-    biddingHtml: bidding.buildAuctionHtml(linData),
-    bottomLeftEl: options.bottomLeftEl || null,
+    // Convert BridgePlayer's { state, contractData } into the attempt row the
+    // viewer records (optimal needs a DD
+    // target BridgePlayer doesn't report yet).
+    onComplete: ({ state, contractData }) => {
+      const made = userSide === 'NS' ? state.nsTricks : state.ewTricks;
+      const target = contractData?.level ? contractData.level + 6 : null;
+      options.onComplete?.({
+        interactive: true,
+        gaveUp: false,
+        solved: target == null ? null : made >= (userIsDeclarer ? target : 14 - target),
+        retries: [],
+        tricksMade: made,
+        optimal: null,
+        timestamp: new Date().toISOString(),
+      });
+    },
   });
 }
+
+// Display-only table (no play) for problems that aren't played out: bidding,
+// suit combinations, double dummy, etc. Shows hands_structured as stored, so
+// partial hands and 'x' spot cards display as they do in the static deal.
+export async function mountProblemDisplay(container, problem, options = {}) {
+  if (!container) throw new Error('Display requires a container');
+  const { mountDealViewer } = await import('/bridge-lib/deal-viewer/DealViewer.js');
+  return mountDealViewer(container, {
+    // Stored hands as-is; without them DealViewer draws the LIN's deal.
+    hands: problem.hands_structured || null,
+    lin: problem.lin ? normalizeLin(problem.lin) : '',
+    visibleSeats: (problem.problem_visible_hands || ['N', 'S']).map(seat => String(seat).toUpperCase()),
+    bottomLeftHtml: options.bottomLeftHtml || '',
+  });
+}
+
