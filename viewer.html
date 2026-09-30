@@ -2788,9 +2788,9 @@ function showOpenModeModal(setId, setName, fullSet, isShared, sharedOpts) {
   modal.addEventListener('click', overlayClick);
   document.getElementById('openModeClose').addEventListener('click', close);
 
-  document.getElementById('openModeResume').addEventListener('click', () => {
+  document.getElementById('openModeResume').addEventListener('click', async () => {
     close();
-    const restored = Math.min(loadSetCursor(setId), fullSet.length - 1);
+    const restored = await loadSetCursor(setId, fullSet);
     _doOpenSet(setId, setName, fullSet, restored, isShared, sharedOpts);
   });
   document.getElementById('openModeUnattempted').addEventListener('click', () => {
@@ -2875,13 +2875,39 @@ function currentSetContext() {
   return { id: 'draft', name: draftSetName || 'Draft' };
 }
 
+// Set position, saved to this browser and (debounced) to the user's
+// bp_set_progress row so another device resumes at the same problem. The
+// problem id is kept too: in Unattempted / Score-below mode the cursor indexes
+// the filtered list, so Resume finds the problem in the full set by id.
+let _setProgressTimer = null;
 function saveSetCursor() {
-  if (currentSavedId) {
-    try { localStorage.setItem('bp-set-cursor-' + currentSavedId, String(cursor)); } catch(e) {}
-  }
+  if (!currentSavedId) return;
+  const setId = currentSavedId;
+  const progress = { cursor, problemId: problemSet[cursor]?.problem_id || null, savedAt: Date.now() };
+  try { localStorage.setItem('bp-set-cursor-' + setId, JSON.stringify(progress)); } catch(e) {}
+  clearTimeout(_setProgressTimer);
+  _setProgressTimer = setTimeout(() => {
+    Promise.resolve(window.bpDb?.putSetProgress?.(setId, progress))
+      .catch(e => console.warn('Could not save set position:', e));
+  }, 800);
 }
-function loadSetCursor(setId) {
-  try { return parseInt(localStorage.getItem('bp-set-cursor-' + setId) || '0', 10) || 0; } catch(e) { return 0; }
+// Index in fullSet to resume at: the newer of this browser's copy and the DB
+// copy (old local entries are a bare cursor number with no savedAt).
+async function loadSetCursor(setId, fullSet) {
+  let local = null, remote = null;
+  try {
+    const raw = JSON.parse(localStorage.getItem('bp-set-cursor-' + setId) || 'null');
+    local = typeof raw === 'number' ? { cursor: raw } : raw;
+  } catch(e) {}
+  try { remote = (await window.bpDb?.getSetProgress?.(setId)) || null; } catch(e) {
+    console.warn('Could not load set position:', e);
+  }
+  const saved = !local || !remote ? (local || remote)
+    : (remote.savedAt || 0) >= (local.savedAt || 0) ? remote : local;
+  if (!saved) return 0;
+  const byId = saved.problemId ? fullSet.findIndex(p => p.problem_id === saved.problemId) : -1;
+  const idx = byId >= 0 ? byId : (saved.cursor | 0);
+  return Math.min(Math.max(0, idx), fullSet.length - 1);
 }
 
 // Per-book reading progress (books open with a null saved-set id, so the
@@ -3590,6 +3616,8 @@ import {
   removeRecentBook,
   getBookProgress,
   putBookProgress,
+  getSetProgress,
+  putSetProgress,
   listMyAttempts,
   saveProblemAttempts,
 } from './db.js';
@@ -3603,6 +3631,7 @@ window.bpDb = {
   listTagsForCategory,
   listSharedSets, listSharedSetIds, shareSet, listSetShares, removeSetShare, updateSetShare,
   listRecentBooks, recordBookOpen, removeRecentBook, getBookProgress, putBookProgress,
+  getSetProgress, putSetProgress,
   listMyAttempts, saveProblemAttempts,
 };
 window.bpEditor = { openEditor, revertProblem, reloadProblem };

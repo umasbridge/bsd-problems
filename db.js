@@ -296,6 +296,29 @@ export async function putBookProgress(bookTitle, progress) {
   if (error) throw error;
 }
 
+// Position in a problem set ({ cursor, problemId, savedAt }), one row per
+// (user, set) in bp_set_progress so "Resume" works across devices.
+export async function getSetProgress(setId) {
+  const { data, error } = await supabase
+    .from('bp_set_progress')
+    .select('progress')
+    .eq('set_id', setId)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.progress || null;
+}
+
+export async function putSetProgress(setId, progress) {
+  const userId = await currentUserId();
+  const { error } = await supabase
+    .from('bp_set_progress')
+    .upsert(
+      { user_id: userId, set_id: setId, progress, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,set_id' },
+    );
+  if (error) throw error;
+}
+
 export async function removeRecentBook(bookTitle) {
   const userId = await currentUserId();
   const { error } = await supabase
