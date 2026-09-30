@@ -2554,11 +2554,11 @@ function openBook(bookTitle, jumbled) {
 
 // Open a book from "Reading Now": skip the in-order/jumbled prompt and resume
 // at the saved position, reusing the exact order last read (jumbled or not).
-function openBookResume(bookTitle) {
+async function openBookResume(bookTitle) {
   // Apply this book's saved carding prefs silently (no dialog on resume).
   const bookPrefs = loadBookCarding(bookTitle);
   if (bookPrefs) saveCardingPrefs(bookPrefs);
-  const saved = loadBookProgress(bookTitle);
+  const saved = await loadBookProgress(bookTitle);
   let list = null;
   // Only replay the exact saved sequence when it was a JUMBLED read — an
   // in-order read must follow the current numeric sort (older saved progress,
@@ -2887,15 +2887,30 @@ function loadSetCursor(setId) {
 // Per-book reading progress (books open with a null saved-set id, so the
 // set-cursor machinery above doesn't cover them). Stores the exact order last
 // read — jumbled or in-order — plus the cursor, so "Reading Now" can resume.
+// Saved to this browser and to the user's bp_recent_books row (so another
+// device resumes at the same problem); the DB write is debounced while paging.
+let _bookProgressTimer = null;
 function saveBookProgress() {
   if (!readingBook || !readingBookTitle) return;
-  try {
-    localStorage.setItem('bp-book-progress-' + readingBookTitle,
-      JSON.stringify({ order: problemSet.map(p => p.problem_id), cursor, jumbled: readingBookJumbled }));
-  } catch(e) {}
+  const title = readingBookTitle;
+  const progress = { order: problemSet.map(p => p.problem_id), cursor, jumbled: readingBookJumbled, savedAt: Date.now() };
+  try { localStorage.setItem('bp-book-progress-' + title, JSON.stringify(progress)); } catch(e) {}
+  clearTimeout(_bookProgressTimer);
+  _bookProgressTimer = setTimeout(() => {
+    Promise.resolve(window.bpDb?.putBookProgress?.(title, progress))
+      .catch(e => console.warn('Could not save reading position:', e));
+  }, 800);
 }
-function loadBookProgress(bookTitle) {
-  try { return JSON.parse(localStorage.getItem('bp-book-progress-' + bookTitle) || 'null'); } catch(e) { return null; }
+// Newest of this browser's copy and the DB copy (entries without savedAt
+// predate cross-device sync and lose to any timestamped one).
+async function loadBookProgress(bookTitle) {
+  let local = null, remote = null;
+  try { local = JSON.parse(localStorage.getItem('bp-book-progress-' + bookTitle) || 'null'); } catch(e) {}
+  try { remote = (await window.bpDb?.getBookProgress?.(bookTitle)) || null; } catch(e) {
+    console.warn('Could not load reading position:', e);
+  }
+  if (!local || !remote) return local || remote;
+  return (remote.savedAt || 0) >= (local.savedAt || 0) ? remote : local;
 }
 
 function show(i) {
@@ -3573,6 +3588,8 @@ import {
   listRecentBooks,
   recordBookOpen,
   removeRecentBook,
+  getBookProgress,
+  putBookProgress,
   listMyAttempts,
   saveProblemAttempts,
 } from './db.js';
@@ -3585,7 +3602,7 @@ window.bpDb = {
   listMySets, createSet, updateSetMeta, replaceSetItems, deleteSetById,
   listTagsForCategory,
   listSharedSets, listSharedSetIds, shareSet, listSetShares, removeSetShare, updateSetShare,
-  listRecentBooks, recordBookOpen, removeRecentBook,
+  listRecentBooks, recordBookOpen, removeRecentBook, getBookProgress, putBookProgress,
   listMyAttempts, saveProblemAttempts,
 };
 window.bpEditor = { openEditor, revertProblem, reloadProblem };

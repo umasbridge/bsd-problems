@@ -273,6 +273,29 @@ export async function recordBookOpen(bookTitle) {
   if (error) throw error;
 }
 
+// Reading position in a book ({ order, cursor, jumbled, savedAt }), stored on
+// the user's bp_recent_books row so resuming works across devices.
+export async function getBookProgress(bookTitle) {
+  const { data, error } = await supabase
+    .from('bp_recent_books')
+    .select('progress')
+    .eq('book_title', bookTitle)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.progress || null;
+}
+
+export async function putBookProgress(bookTitle, progress) {
+  const userId = await currentUserId();
+  const { error } = await supabase
+    .from('bp_recent_books')
+    .upsert(
+      { user_id: userId, book_title: bookTitle, progress },
+      { onConflict: 'user_id,book_title' },
+    );
+  if (error) throw error;
+}
+
 export async function removeRecentBook(bookTitle) {
   const userId = await currentUserId();
   const { error } = await supabase
