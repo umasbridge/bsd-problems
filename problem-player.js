@@ -68,6 +68,8 @@ export async function mountBridgePlayerForProblem(container, problem, options = 
     // Show the lead, then step through the book's play to the decision point.
     preplayLead: true,
     autoplay: true,
+    // After the computer completes a trick it waits for ▶ before leading again.
+    pauseAfterTrick: true,
     cardingNS: options.cardingNS || 'UDCA',
     cardingEW: options.cardingEW || 'UDCA',
     // Convert BridgePlayer's { state, contractData } into the attempt row the
